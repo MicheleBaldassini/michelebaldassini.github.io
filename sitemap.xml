@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://michelebaldassini.github.io/</loc>
+        <lastmod>2025-05-10</lastmod>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://michelebaldassini.github.io/publications/</loc>
+        <lastmod>2025-05-10</lastmod>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://michelebaldassini.github.io/talks_and_awards/</loc>
+        <lastmod>2025-05-10</lastmod>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://michelebaldassini.github.io/teaching/computational_intelligence_and_deep_learning/</loc>
+        <lastmod>2025-05-10</lastmod>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://michelebaldassini.github.io/teaching/intelligent_systems/</loc>
+        <lastmod>2025-05-10</lastmod>
+        <priority>0.5</priority>
+    </url>
+</urlset>

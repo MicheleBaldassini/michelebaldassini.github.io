@@ -1,0 +1,116 @@
+[
+    {
+        "title": "Research Fellow",
+        "info": "European Project SAFE-LAND",
+        "section": "experience",
+        "link": "https://michelebaldassini.github.io/#research-fellow-2"
+    },
+    {
+        "title": "Research Fellow",
+        "info": "European Project MEDEA",
+        "section": "experience",
+        "link": "https://michelebaldassini.github.io/#research-fellow-1"
+    },
+    {
+        "title": "Teaching Assistant",
+        "info": "Manage lab for two MSc courses",
+        "section": "experience",
+        "link": "https://michelebaldassini.github.io/#teaching-assistant"
+    },
+    {
+        "title": "Computational Intelligence and Deep Learning",
+        "info": "MSc in Artificial Intelligence and Data Engineering",
+        "section": "teaching",
+        "link": "https://michelebaldassini.github.io/teaching/computational_intelligence_and_deep_learning/"
+    },
+    {
+        "title": "Intelligent Systems",
+        "info": "MSc in Computer Engineering",
+        "section": "teaching",
+        "link": "https://michelebaldassini.github.io/teaching/intelligent_systems/"
+    },
+    {
+        "title": "Explainable Ensemble Learning for Structural Damage Prediction under Seismic Events",
+        "info": "European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning (ESANN), pp. 609\u2013614, 2025",
+        "section": "publications",
+        "link": "https://michelebaldassini.github.io/publications/#explainable-ensemble-learning-for-structural-damage-prediction-under-seismic-events"
+    },
+    {
+        "title": "Fast and interpretable prediction of seismic kinematics of flexible retaining walls in sand through explainable artificial intelligence",
+        "info": "Computers and Geotechnics, vol. 179, pp. 107007, 2025",
+        "section": "publications",
+        "link": "https://michelebaldassini.github.io/publications/#fast-and-interpretable-prediction-of-seismic-kinematics-of-flexible-retaining-walls-in-sand-through-explainable-artificial-intelligence"
+    },
+    {
+        "title": "A LiDAR-Based Recommendation System to Improve Sitting Posture Respecting Privacy",
+        "info": "IEEE Journal of Biomedical and Health Informatics, vol. 28, no. 9, pp. 5303\u20135311, 2024",
+        "section": "publications",
+        "link": "https://michelebaldassini.github.io/publications/#a-lidar-based-recommendation-system-to-improve-sitting-posture-respecting-privacy"
+    },
+    {
+        "title": "A Human-Centric System Combining Smartwatch and LiDAR Data to Assess the Risk of Musculoskeletal Disorders and Improve Ergonomics of Industry 5.0 Manufacturing Workers",
+        "info": "Computers in Industry, vol. 155, pp. 104042, 2024",
+        "section": "publications",
+        "link": "https://michelebaldassini.github.io/publications/#a-human-centric-system-combining-smartwatch-and-lidar-data-to-assess-the-risk-of-musculoskeletal-disorders-and-improve-ergonomics-of-industry-50-manufacturing-workers"
+    },
+    {
+        "title": "Speech-Based Detection of In-Car Escalating Arguments to Prevent Distracted Driving",
+        "info": "2023 IEEE International Conference on Big Data (BigData), pp. 5330\u20135337, 2023",
+        "section": "publications",
+        "link": "https://michelebaldassini.github.io/publications/#speech-based-detection-of-in-car-escalating-arguments-to-prevent-distracted-driving"
+    },
+    {
+        "title": "Are You Sitting With Good Posture? Tracking the Position of the Legs via 2-D LiDAR",
+        "info": "IEEE Embedded Systems Letters, vol. 15, no. 3, pp. 137\u2013140, 2023",
+        "section": "publications",
+        "link": "https://michelebaldassini.github.io/publications/#are-you-sitting-with-good-posture-tracking-the-position-of-the-legs-via-2-d-lidar"
+    },
+    {
+        "title": "A smartphone app to collect emotion-labeled signals in the wild using a body sensor network",
+        "info": "2022 IEEE International Symposium on Multimedia (ISM), pp. 159\u2013160, 2022",
+        "section": "publications",
+        "link": "https://michelebaldassini.github.io/publications/#a-smartphone-app-to-collect-emotion-labeled-signals-in-the-wild-using-a-body-sensor-network"
+    },
+    {
+        "title": "Detecting happiness from 14-channel binary-valued EEG charts via deep learning",
+        "info": "2022 IEEE International Symposium on Multimedia (ISM), pp. 66\u201373, 2022",
+        "section": "publications",
+        "link": "https://michelebaldassini.github.io/publications/#detecting-happiness-from-14-channel-binary-valued-eeg-charts-via-deep-learning"
+    },
+    {
+        "title": "ESANN 2025",
+        "info": "Explainable Ensemble Learning for Structural Damage Prediction under Seismic Events",
+        "section": "talks",
+        "link": "https://michelebaldassini.github.io/talks_and_awards/#esann-2025"
+    },
+    {
+        "title": "AIDI 2024",
+        "info": "La cattiva postura sul lavoro si corregge con l\u2019intelligenza artificiale",
+        "section": "talks",
+        "link": "https://michelebaldassini.github.io/talks_and_awards/#aidi-2024"
+    },
+    {
+        "title": "Media Spotlight",
+        "info": "Research featured in major newspapers and covered by RAI 3 news",
+        "section": "awards",
+        "link": "https://michelebaldassini.github.io/talks_and_awards/#media-spotlight"
+    },
+    {
+        "title": "BigData 2023",
+        "info": "Speech-Based Detection of In-Car Escalating Arguments to Prevent Distracted Driving",
+        "section": "talks",
+        "link": "https://michelebaldassini.github.io/talks_and_awards/#bigdata-2023"
+    },
+    {
+        "title": "Best Paper Award Candidate (Top-2 paper)",
+        "info": "Detecting happiness from 14-channel binary-valued EEG charts via deep learning",
+        "section": "awards",
+        "link": "https://michelebaldassini.github.io/talks_and_awards/#best-paper-award-candidate-(top-2-paper)"
+    },
+    {
+        "title": "ISM 2022",
+        "info": "Detecting happiness from 14-channel binary-valued EEG charts via deep learning",
+        "section": "talks",
+        "link": "https://michelebaldassini.github.io/talks_and_awards/#ism-2022"
+    }
+]

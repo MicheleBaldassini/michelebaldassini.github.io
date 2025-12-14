@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang='en-us'>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0, interactive-widget=resizes-content'>
+
+        <meta name='author' content='Michele Baldassini'>
+        <meta name='description' content='Research fellow of computer engineering at the Department of Information Engineering of the University of Pisa, Italy. His research interests include deep learning, computer vision, and industrial informatics.'>
+
+        <meta property='og:title' content='Michele Baldassini&#39;s Webpage'>
+        <meta property='og:description' content='Research fellow of computer engineering at the Department of Information Engineering of the University of Pisa, Italy. Research interests include deep learning, computer vision, and industrial informatics.'>
+        <meta property='og:url' content='https://michelebaldassini.github.io'>
+        <meta property='og:image' content='https://michelebaldassini.github.io/images/photo.jpg'>
+        <meta property='og:site_name' content='Michele Baldassini&#39;s Webpage'>
+        <meta property='og:url' content='https://michelebaldassini.github.io'>
+
+        <meta name='twitter:card' content='summary_large_image'>
+        <meta name='twitter:title' content='Michele Baldassini&#39;s Webpage'>
+        <meta name='twitter:description' content='Research fellow of computer engineering at the Department of Information Engineering of the University of Pisa, Italy. Research interests include deep learning, computer vision, and industrial informatics.'>
+        <meta name='twitter:image' content='https://michelebaldassini.github.io/images/photo.jpg'>
+
+        <meta name='apple-mobile-web-app-title' content='Michele Baldassini&#39;s Webpage'>
+
+        <meta name='robots' content='index, follow'>
+
+        <link rel='canonical' href='https://michelebaldassini.github.io'>
+
+        <!-- Favicon -->
+        <link rel='icon' type='image/x-icon' href='favicon/favicon.ico'>
+        <link rel='shortcut icon' type='image/x-icon' href='favicon/favicon.ico'>
+        <link rel='icon' type='image/png' sizes='16x16' href='favicon/favicon-16x16.png'>
+        <link rel='icon' type='image/png' sizes='32x32' href='favicon/favicon-32x32.png'>
+        <link rel='icon' type='image/png' sizes='48x48' href='favicon/favicon-48x48.png'>
+        <!-- <link rel='icon' type='image/png' sizes='96x96' href='favicon/favicon-96x96.png'> -->
+        <link rel='icon' type='image/svg+xml' href='favicon/favicon.svg'>
+
+        <!-- Font Family -->
+        <link rel='preconnect' href='https://fonts.googleapis.com'>
+        <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+        <link rel='preload' href='https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&amp;display=swap' as='style'>
+        <link type='text/css' rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&amp;display=swap'>
+
+        <!-- Font Awesome -->
+        <link rel='preconnect' href='https://cdnjs.cloudflare.com' crossorigin>
+        <link rel='preload' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css' as='style'>
+        <link type='text/css' rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'>
+
+        <link type='text/css' rel='stylesheet' href='css/assets/bootstrap-5.3.3.min.css'>
+        <link type='text/css' rel='stylesheet' href='css/assets/leaflet-1.9.4.css'>
+
+        <link type='text/css' rel='stylesheet' href='css/style.css'>
+        <link type='text/css' rel='stylesheet' href='css/responsive.css'>
+
+        <script type='text/javascript' src='js/assets/leaflet-1.9.4.js'></script>
+        <script type='text/javascript' src='js/main_head.js'></script>
+
+        <title>Michele Baldassini | Home</title>
+
+    </head>
+
+    <body>
+        <!-- Cookie Banner -->
+        <div class='cookie-window hidden'>
+            <span class='cookie-message'>
+                <span>This website uses cookies to ensure you get the best browsing experience.</span>
+                <a class='cookie-link' href='https://www.cookiesandyou.com' rel='noopener noreferrer nofollow' target='_blank'>Learn more</a>
+            </span>
+            <div class='cookie-compliance'>
+                <a class='cookie-btn'>Got it!</a>
+            </div>
+        </div>
+
+        <!-- NAVIGATION BAR -->
+        <nav class='navbar navbar-expand-lg fixed-top'>
+            <div class='progress-container'>
+                <div class='progress-bar' id='myBar'></div>
+            </div>
+            <div class='container'>
+                <button class='navbar-toggler collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#navbarResponsive' aria-controls='navbarResponsive' aria-expanded='false' aria-label='Toggle navigation'>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div id='navbarResponsive' class='collapse navbar-collapse'>
+                    <ul class='navbar-nav m-auto'>
+                        <li class='nav-item'>
+                            <a class='nav-link about-link home-link' href='javascript:void(0);'>About</a>
+                        </li>
+                        <li class='nav-item'>
+                            <a class='nav-link experience-link home-link' href='javascript:void(0);'>Experience</a>
+                        </li>
+                        <li class='nav-item'>
+                            <a class='nav-link teaching-link home-link' href='javascript:void(0);'>Teaching</a>  
+                        </li>
+                        <li class='nav-item'>
+                            <a class='nav-link publications-link home-link' href='javascript:void(0);'>Publications</a>
+                        </li>
+                        <li class='nav-item'>
+                            <a class='nav-link talks-link home-link' href='javascript:void(0);'>Talks &amp; Awards</a>
+                        </li>
+                        <li class='nav-item'>
+                            <a class='nav-link contact-link home-link' href='javascript:void(0);'>Contact</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class='search-nav'>
+                    <button id='btn-search' class='toggle-button' aria-label='search'>
+                        <svg id='search' width='18' height='18' viewBox='0 0 512 512' fill='currentcolor'>
+                            <path d='M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8.0 45.3s-32.8 12.5-45.3.0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9.0 208S93.1.0 208 0 416 93.1 416 208zM208 352a144 144 0 100-288 144 144 0 100 288z'/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class='theme-toggle'>
+                    <button class='toggle-button'>
+                        <svg id='moon' width='24' height='18' viewBox='0 0 24 24' fill='none' stroke='currentcolor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>
+                            <path d='M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z'/>
+                        </svg>
+                        <svg id='sun' width='24' height='18' viewBox='0 0 24 24' fill='none' stroke='currentcolor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>
+                            <circle cx='12' cy='12' r='5'/>
+                            <line x1='12' y1='1' x2='12' y2='3'/>
+                            <line x1='12' y1='21' x2='12' y2='23'/>
+                            <line x1='4.22' y1='4.22' x2='5.64' y2='5.64'/>
+                            <line x1='18.36' y1='18.36' x2='19.78' y2='19.78'/>
+                            <line x1='1' y1='12' x2='3' y2='12'/>
+                            <line x1='21' y1='12' x2='23' y2='12'/>
+                            <line x1='4.22' y1='19.78' x2='5.64' y2='18.36'/>
+                            <line x1='18.36' y1='5.64' x2='19.78' y2='4.22'/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class='collapse' id='searchBar'>
+                <div class='container'>
+                    <form id='searchBox'>
+                        <svg id='search' width='18' height='18' viewBox='0 0 512 512' fill='currentcolor'>
+                            <path d='M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8.0 45.3s-32.8 12.5-45.3.0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9.0 208S93.1.0 208 0 416 93.1 416 208zM208 352a144 144 0 100-288 144 144 0 100 288z'/>
+                        </svg>
+                        <input id='search-input' class='form-control' type='search' placeholder='Search...' aria-label='Search'>
+                    </form>
+                    <div id='search-results'></div>
+                </div>
+            </div>
+        </nav>
+    
+        <!-- SECTION ABOUT -->
+        <section id='about'>
+            <div class='container'>
+                <div class='row'>
+                    <div id='portrait' class='col-12 col-lg-4'>
+                        <div class='portrait-image'>
+                            <div class='img'></div>
+                        </div>
+                        <div class='portrait-title'>
+                            <h2>Michele Baldassini</h2>
+                            <h3>Research Fellow of Computer Engineering</h3>
+                            <h3>
+                                <a href='http://www.unipi.it' rel='noopener noreferrer nofollow' target='_blank'>
+                                    <span>University of Pisa</span>
+                                </a>
+                            </h3>
+                        </div>
+                        <!-- <div class='cv'>
+                            <a href='cv/'>
+                                Curriculm Vitae
+                            </a>
+                        </div> -->
+                        <ul>
+                            <li>
+                                <a href='mailto:michele.baldassini@ing.unipi.it'>
+                                    <!-- <i class='fa-solid fa-envelope fa-2x'></i> -->
+                                    <svg width='30' height='30' viewBox='0 0 512 512' fill='currentcolor' stroke='currentcolor'>
+                                        <path d='M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z'/>
+                                    </svg>
+                                </a>
+                            </li>
+                            <li>
+                                <a href='https://linkedin.com/in/michele-baldassini' rel='noopener noreferrer nofollow' target='_blank'>
+                                    <!-- <i class='fa-brands fa-linkedin fa-2x'></i> -->
+                                    <svg width='30' height='30' viewBox='0 0 448 512' fill='currentcolor' stroke='currentcolor'>
+                                        <path d='M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z'/>
+                                    </svg>
+                                </a>
+                            </li>
+
+                             <li>
+                                <a href='https://www.github.com/michelebaldassini' rel='noopener noreferrer nofollow' target='_blank'>
+                                    <!-- <i class='fa-brands fa-github fa-2x'></i> -->
+                                    <svg width='30' height='30' viewBox='0 0 496 512' fill='currentcolor' stroke='currentcolor'>
+                                        <path d='M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z'/>
+                                    </svg>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id='bio' class='col-12 col-lg-8'>
+                        <h2>Biography</h2>
+                        <p>Michele Baldassini is a research fellow of computer engineering at the Department of Information Engineering of the University of Pisa, Italy. His research interests include deep learning, computer vision, and industrial informatics.</p>
+                        <div class='row'>
+                            <div class='col-md-5 col-sm-5'>
+                                <h3>Interests</h3>
+                                <ul class='interests'>
+                                    <li>Machine Learning</li>
+                                    <li>Deep Learning</li>
+                                    <li>Computer Vision</li>
+                                    <li>Embedded Systems</li>
+                                    <li>Industrial Informatics</li>
+                                </ul>
+                            </div>
+                            <div class='col-md-7 col-sm-7'>
+                                <h3>Education</h3>
+                                <ul class='degree'>
+                                    <li>
+                                        <!-- <i class='fa-li fa-solid fa-graduation-cap'></i> -->
+                                        <svg class='graduation-cap' width='25' height='25' viewBox='0 0 640 512' fill='currentcolor' stroke='currentcolor'>
+                                            <path d='M622.34 153.2L343.4 67.5c-15.2-4.67-31.6-4.67-46.79 0L17.66 153.2c-23.54 7.23-23.54 38.36 0 45.59l48.63 14.94c-10.67 13.19-17.23 29.28-17.88 46.9C38.78 266.15 32 276.11 32 288c0 10.78 5.68 19.85 13.86 25.65L20.33 428.53C18.11 438.52 25.71 448 35.94 448h56.11c10.24 0 17.84-9.48 15.62-19.47L82.14 313.65C90.32 307.85 96 298.78 96 288c0-11.57-6.47-21.25-15.66-26.87.76-15.02 8.44-28.3 20.69-36.72L296.6 284.5c9.06 2.78 26.44 6.25 46.79 0l278.95-85.7c23.55-7.24 23.55-38.36 0-45.6zM352.79 315.09c-28.53 8.76-52.84 3.92-65.59 0l-145.02-44.55L128 384c0 35.35 85.96 64 192 64s192-28.65 192-64l-14.18-113.47-145.03 44.56z'/>
+                                        </svg>
+                                        <div class='graduation-div'>
+                                            <p class='course'>PhD in Smart Computing, 2024</p>
+                                            <p class='institution'>Universities of Pisa, Florence and Siena</p>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <!-- <i class='fa-li fa-solid fa-graduation-cap'></i> -->
+                                        <svg class='graduation-cap' width='25' height='25' viewBox='0 0 640 512' fill='currentcolor' stroke='currentcolor'>
+                                            <path d='M622.34 153.2L343.4 67.5c-15.2-4.67-31.6-4.67-46.79 0L17.66 153.2c-23.54 7.23-23.54 38.36 0 45.59l48.63 14.94c-10.67 13.19-17.23 29.28-17.88 46.9C38.78 266.15 32 276.11 32 288c0 10.78 5.68 19.85 13.86 25.65L20.33 428.53C18.11 438.52 25.71 448 35.94 448h56.11c10.24 0 17.84-9.48 15.62-19.47L82.14 313.65C90.32 307.85 96 298.78 96 288c0-11.57-6.47-21.25-15.66-26.87.76-15.02 8.44-28.3 20.69-36.72L296.6 284.5c9.06 2.78 26.44 6.25 46.79 0l278.95-85.7c23.55-7.24 23.55-38.36 0-45.6zM352.79 315.09c-28.53 8.76-52.84 3.92-65.59 0l-145.02-44.55L128 384c0 35.35 85.96 64 192 64s192-28.65 192-64l-14.18-113.47-145.03 44.56z'/>
+                                        </svg>
+                                        <div class='graduation-div'>
+                                            <p class='course'>MSc in Embedded Computing Systems, 2020</p>
+                                            <p class='institution'>University of Pisa and School of Advanced Studies Sant'Anna</p>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <!-- <i class='fa-li fa-solid fa-graduation-cap'></i> -->
+                                        <svg class='graduation-cap' width='25' height='25' viewBox='0 0 640 512' fill='currentcolor' stroke='currentcolor'>
+                                            <path d='M622.34 153.2L343.4 67.5c-15.2-4.67-31.6-4.67-46.79 0L17.66 153.2c-23.54 7.23-23.54 38.36 0 45.59l48.63 14.94c-10.67 13.19-17.23 29.28-17.88 46.9C38.78 266.15 32 276.11 32 288c0 10.78 5.68 19.85 13.86 25.65L20.33 428.53C18.11 438.52 25.71 448 35.94 448h56.11c10.24 0 17.84-9.48 15.62-19.47L82.14 313.65C90.32 307.85 96 298.78 96 288c0-11.57-6.47-21.25-15.66-26.87.76-15.02 8.44-28.3 20.69-36.72L296.6 284.5c9.06 2.78 26.44 6.25 46.79 0l278.95-85.7c23.55-7.24 23.55-38.36 0-45.6zM352.79 315.09c-28.53 8.76-52.84 3.92-65.59 0l-145.02-44.55L128 384c0 35.35 85.96 64 192 64s192-28.65 192-64l-14.18-113.47-145.03 44.56z'/>
+                                        </svg>
+                                        <div class='graduation-div'>
+                                            <p class='course'>BSc in Computer Engineering, 2016</p>
+                                            <p class='institution'>University of Pisa</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='down'>
+                <svg width='20' height='20' viewBox='-406 158 86 86' fill='currentcolor' stroke='currentcolor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+                    <path d='M-400.1,179c-1.4-1.3-3.5-1.3-4.9,0s-1.4,3.5,0,4.8l39.6,39.2c1.4,1.3,3.5,1.3,4.9,0l39.5-39.2c1.4-1.3,1.4-3.5,0-4.8s-3.5-1.3-4.9,0l-37.1,35.7L-400.1,179z'/>
+                </svg>
+            </div>
+        </section>
+
+        <!-- SECTION SKILLS -->
+        <section id='skills'>
+            <div class='container'>
+                <div class='row'>
+                    <div class='col-12 col-lg-2'>
+                        <h2>Skills</h2>
+                    </div>
+                    <div class='col-12 col-lg-10'>
+                        <div class='row'>
+                            <div class='skill-item mx-auto animated fade-up skill-first' data-skill='HTML' data-percent='85'>
+                                <svg class='skill-circle' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid meet'>
+                                    <circle class='bg' cx='50' cy='50' r='45'/>
+                                    <circle class='progress' cx='50' cy='50' r='45'/>
+                                </svg>
+
+                                <div class='skill-text-wrapper'>
+                                    <div class='skill-text'>
+                                        <div class='skill-percent'>0%</div>
+                                        <div class='skill-name'>Artificial<span class='d-block'>Intelligence</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class='skill-item mx-auto animated fade-up skill-first' data-skill='HTML' data-percent='80'>
+                                <svg class='skill-circle' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid meet'>
+                                    <circle class='bg' cx='50' cy='50' r='45'/>
+                                    <circle class='progress' cx='50' cy='50' r='45'/>
+                                </svg>
+                                <div class='skill-text-wrapper'>
+                                    <div class='skill-text'>
+                                        <div class='skill-percent'>0%</div>
+                                        <div class='skill-name'>Machine<span class='d-block'>Learning</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class='skill-item mx-auto animated fade-up skill-first' data-skill='CSS' data-percent='70'>
+                                <svg class='skill-circle' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid meet'>
+                                    <circle class='bg' cx='50' cy='50' r='45'/>
+                                    <circle class='progress' cx='50' cy='50' r='45'/>
+                                </svg>
+                                <div class='skill-text-wrapper'>
+                                    <div class='skill-text'>
+                                        <div class='skill-percent'>0%</div>
+                                        <div class='skill-name'>Deep<span class='d-block'>Learning</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                      
+                            <div class='skill-item mx-auto animated fade-up skill-first' data-skill='JavaScript' data-percent='70'>
+                                <svg class='skill-circle' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid meet'>
+                                    <circle class='bg' cx='50' cy='50' r='45'/>
+                                    <circle class='progress' cx='50' cy='50' r='45'/>
+                                </svg>
+                                <div class='skill-text-wrapper'>
+                                    <div class='skill-text'>
+                                        <div class='skill-percent'>0%</div>
+                                        <div class='skill-name'>Neural<span class='d-block'>Networks</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class='skill-item mx-auto animated fade-up skill-first' data-skill='JavaScript' data-percent='65'>
+                                <svg class='skill-circle' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid meet'>
+                                    <circle class='bg' cx='50' cy='50' r='45'/>
+                                    <circle class='progress' cx='50' cy='50' r='45'/>
+                                </svg>
+                                <div class='skill-text-wrapper'>
+                                    <div class='skill-text'>
+                                        <div class='skill-percent'>0%</div>
+                                        <div class='skill-name'>Computer<span class='d-block'>Vision</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class='skill-item mx-auto animated fade-up skill-second' data-skill='HTML' data-percent='90'>
+                                <svg class='skill-circle' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid meet'>
+                                    <circle class='bg' cx='50' cy='50' r='45'/>
+                                    <circle class='progress' cx='50' cy='50' r='45'/>
+                                </svg>
+                                <div class='skill-text-wrapper'>
+                                    <div class='skill-text'>
+                                        <div class='skill-percent'>0%</div>
+                                        <div class='skill-name'>Python</div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class='skill-item mx-auto animated fade-up skill-second' data-skill='CSS' data-percent='70'>
+                                <svg class='skill-circle' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid meet'>
+                                    <circle class='bg' cx='50' cy='50' r='45'/>
+                                    <circle class='progress' cx='50' cy='50' r='45'/>
+                                </svg>
+                                <div class='skill-text-wrapper'>
+                                    <div class='skill-text'>
+                                        <div class='skill-percent'>0%</div>
+                                        <div class='skill-name'>SQL</div>
+                                    </div>
+                                </div>
+                            </div>
+                      
+                            <div class='skill-item mx-auto animated fade-up skill-second' data-skill='JavaScript' data-percent='80'>
+                                <svg class='skill-circle' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid meet'>
+                                    <circle class='bg' cx='50' cy='50' r='45'/>
+                                    <circle class='progress' cx='50' cy='50' r='45'/>
+                                </svg>
+                                <div class='skill-text-wrapper'>
+                                    <div class='skill-text'>
+                                        <div class='skill-percent'>0%</div>
+                                        <div class='skill-name'>JavaScript</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class='skill-item mx-auto animated fade-up skill-second' data-skill='HTML' data-percent='75'>
+                                <svg class='skill-circle' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid meet'>
+                                    <circle class='bg' cx='50' cy='50' r='45'/>
+                                    <circle class='progress' cx='50' cy='50' r='45'/>
+                                </svg>
+                                <div class='skill-text-wrapper'>
+                                    <div class='skill-text'>
+                                        <div class='skill-percent'>0%</div>
+                                        <div class='skill-name'>Java</div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class='skill-item mx-auto animated fade-up skill-second' data-skill='CSS' data-percent='70'>
+                                <svg class='skill-circle' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid meet'>
+                                    <circle class='bg' cx='50' cy='50' r='45'/>
+                                    <circle class='progress' cx='50' cy='50' r='45'/>
+                                </svg>
+                                <div class='skill-text-wrapper'>
+                                    <div class='skill-text'>
+                                        <div class='skill-percent'>0%</div>
+                                        <div class='skill-name'>C/C++</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- END SECTION SKILLS -->
+
+        <!-- SECTION EXPERIENCE -->
+        <section id='experience'>
+            <div class='container'>
+                <div class='row'>
+                    <div class='col-12 col-lg-2'>
+                        <h2>Experience</h2>
+                    </div>
+                    <div class='col-12 col-lg-10'>
+                        <div class='main-timeline'>
+                            <div class='item' id='research-fellow-2' tabindex='0'>
+                                <div class='timeline-wrapper fade-up'>
+                                    <div class='timeline'>
+                                        <div class='timeline-icon'></div>
+                                        <div class='date-content'>
+                                            <div class='date-outer'>
+                                                <div class='date no-month'>
+                                                    <div class='inner-date'>March 2025 -</div>
+                                                    <div class='inner-date'>Present</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class='timeline-content'>
+                                            <h5 class='title'>Research Fellow</h5>
+                                            <div class='description'>
+                                                European Project <b>SAFE-LAND</b>: <i>Mitigating the risk of flooding and landslides via artificial intelligence with a view to extreme climate events</i><span class='d-block'>(UCPM-2023-KAPP-PREV, n. 101140345).</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class='item' id='research-fellow-1' tabindex='0'>
+                                <div class='timeline-wrapper fade-up'>
+                                    <div class='timeline'>
+                                        <div class='timeline-icon'></div>
+                                        <div class='date-content'>
+                                            <div class='date-outer'>
+                                                <div class='date'>
+                                                    <div class='inner-date month'>2 Years</div>
+                                                    <div class='inner-date'>March 2023 -</div>
+                                                    <div class='inner-date'>February 2025</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class='timeline-content'>
+                                            <h5 class='title'>Research Fellow</h5>
+                                            <div class='description'>
+                                                European Project <b>MEDEA</b>: <i>Multidimensional seismic risk assessment combining structural damages and psychological consequences using explainable artificial intelligence</i><span class='d-block'>(UCPM-2022-PP, n. 101101236).</span>
+                                                Documents delivered: 
+                                                <ul>
+                                                    <li><i>Deliverable 4.1. XAI Models</i></li>
+                                                    <li><i>Deliverable 4.2. Data fusion</i></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class='item' id='teaching-assistant' tabindex='0'>
+                                <div class='timeline-wrapper fade-up'>
+                                    <div class='timeline'>
+                                        <div class='timeline-icon'></div>
+                                        <div class='date-content'>
+                                            <div class='date-outer'>
+                                                <div class='date'>
+                                                    <div class='inner-date month'>3 Years</div>
+                                                    <div class='inner-date'>February 2020 -</div>
+                                                    <div class='inner-date'>September 2023</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class='timeline-content'>
+                                            <h5 class='title'>Teaching Assistant</h5>
+                                            <div class='description'>
+                                                Managed lab course for:
+                                                <ul>
+                                                    <li><b>Intelligent Systems</b>, <i>MSc in Computer Engineering</i>, 2020/2021</li>
+                                                    <li><b>Intelligent Systems</b>, <i>MSc in Computer Engineering</i>, 2021/2022</li>
+                                                    <li><b>Intelligent Systems</b>, <i>MSc in Computer Engineering</i>, 2022/2023</li>
+                                                    <li><b>Computational Intelligence and Deep Learning</b>, <i>MSc in Artificial Intelligence and Data Engineering</i>, 2022/2023</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- END SECTION EXPERIENCE -->
+
+        <!-- SECTION TEACHING -->
+        <section id='teaching'>
+            <div class='container'>
+                <div class='row'>
+                    <div class='col-12 col-lg-2'>
+                        <h2>Teaching</h2>
+                    </div>
+                    <div class='col-12 col-lg-10'>
+                        <div class='main-timeline'>
+                            <div class='item' id='computational-intelligence-and-deep-learning' tabindex='0'>
+                                <div class='timeline-wrapper fade-up'>
+                                    <div class='timeline'>
+                                        <div class='timeline-icon'></div>
+                                        <div class='timeline-content'>
+                                            <div class='date-content'>
+                                                <div class='teaching-date'>
+                                                    <span>Year</span>
+                                                    <span>2022 - 2023</span>
+                                                </div>
+                                            </div>
+                                            <div class='card border-0'>
+                                                <div class='card-body p-xl-4'>
+                                                    <div class='icon h1'>
+                                                        <span class='uim-svg'>
+                                                            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'>
+                                                              <path d='M2.5 12.25L12 8l9.5 4.25L12 16.5 2.5 12.25Z'/>
+                                                              <path d='M6.5 14.75v3.25c0 1.55 2.45 2.75 5.5 2.75s5.5-1.2 5.5-2.75v-3.25'/>
+                                                              <path d='M20.5 13v5'/>
+                                                              <circle cx='20.5' cy='19.75' r='1.25'/>
+                                                            </svg>
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    <h2 class='card-title mb-3'>Computational Intelligence and Deep Learning</h2>
+                                                    <h5 class='card-subtitle text-secondary mb-1'>
+                                                        <a href='http://www.dii.unipi.it' rel='noopener noreferrer nofollow' target='_blank'>
+                                                            Department of Information Engineering<span class='d-block'>University of Pisa</span>
+                                                        </a>
+                                                    </h5>
+                                                    <p class='card-text'>
+                                                        Computational Intelligence and Deep Learning is a 6 CFUs mandatory course for the MSc in Artificial Intelligence and Data Engineering
+                                                    </p>
+                                                    <p class='card-text'>
+                                                        <a class='ext-link' href='teaching/computational_intelligence_and_deep_learning/'>
+                                                            <span class='btn btn-primary'>More Info</span>
+                                                        </a>
+                                                    </p>
+                                                    <div class='big-icon h1 text-custom'>
+                                                        <span class='uim-svg'>
+                                                            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='1em' height='1em' fill='currentColor' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'>
+                                                                <path d='M2.5 12.25L12 8l9.5 4.25L12 16.5 2.5 12.25Z'/>
+                                                                <path d='M6.5 14.75v3.25c0 1.55 2.45 2.75 5.5 2.75s5.5-1.2 5.5-2.75v-3.25'/>
+                                                                <path d='M20.5 13v5'/>
+                                                                <circle cx='20.5' cy='19.75' r='1.25'/>
+                                                            </svg>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class='item' id='intelligent-systems' tabindex='0'>
+                                <div class='timeline-wrapper fade-up'>
+                                    <div class='timeline'>
+                                        <div class='timeline-icon'></div>
+                                        <div class='timeline-content'>
+                                            <div class='date-content'>
+                                                <div class='teaching-date'>
+                                                    <span>Year</span>
+                                                    <span>2020 - 2023</span>
+                                                </div>
+                                            </div>
+                                            <div class='card border-0'>
+                                                <div class='card-body p-xl-4'>
+                                                    <div class='icon h1'>
+                                                        <span class='uim-svg'>
+                                                            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'>
+                                                              <path d='M2.5 12.25L12 8l9.5 4.25L12 16.5 2.5 12.25Z'/>
+                                                              <path d='M6.5 14.75v3.25c0 1.55 2.45 2.75 5.5 2.75s5.5-1.2 5.5-2.75v-3.25'/>
+                                                              <path d='M20.5 13v5'/>
+                                                              <circle cx='20.5' cy='19.75' r='1.25'/>
+                                                            </svg>
+                                                        </span>
+                                                    </div>
+                                                    <h2 class='card-title mb-3'>Intelligent Systems</h2>
+                                                    <h5 class='card-subtitle text-secondary mb-1'>
+                                                        <a href='http://www.dii.unipi.it' rel='noopener noreferrer nofollow' target='_blank'>
+                                                            Department of Information Engineering<span class='d-block'>University of Pisa</span>
+                                                        </a>
+                                                    </h5>
+                                                    <p class='card-text'>
+                                                        Intelligent Systems is a 6 CFUs mandatory course for the MSc in Computer Engineering
+                                                    </p>
+                                                    <p class='card-text'>
+                                                        <a class='ext-link' href='teaching/intelligent_systems/'>
+                                                            <span class='btn btn-primary'>More Info</span>
+                                                        </a>
+                                                    </p>
+                                                    <div class='big-icon h1 text-custom'>
+                                                        <span class='uim-svg'>
+                                                            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='1em' height='1em' fill='currentColor' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'>
+                                                                <path d='M2.5 12.25L12 8l9.5 4.25L12 16.5 2.5 12.25Z'/>
+                                                                <path d='M6.5 14.75v3.25c0 1.55 2.45 2.75 5.5 2.75s5.5-1.2 5.5-2.75v-3.25'/>
+                                                                <path d='M20.5 13v5'/>
+                                                                <circle cx='20.5' cy='19.75' r='1.25'/>
+                                                            </svg>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- END SECTION TEACHING -->
+
+        <!-- SECTION PUBLICATIONS -->
+        <section id='publications'>
+            <div class='container'>
+                <div class='row'>
+                    <div class='col-12 col-lg-2'>
+                        <h2>Publications</h2>
+                    </div>
+                    <div class='articles col-12 col-lg-10'>
+                        <div class='item' id='explainable-ensemble-learning-for-structural-damage-prediction-under-seismic-events' tabindex='0'>
+                            <div class='card-wrapper fade-up'>
+                                <div class='article'>
+                                    <h4 class='article-title'>Explainable Ensemble Learning for Structural Damage Prediction under Seismic Events</h4>
+                                    <div class='article-authors'>
+                                        <span>M. Baldassini, P. Foglia, B. Lazzerini, F. Pistolesi, C.A. Prete</span>
+                                    </div>
+                                    <div class='article-info'>
+                                        <span>European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning (ESANN),</span>
+                                        <span>pp. 609–614,</span>
+                                        <span>2025</span>
+                                    </div>
+                                    <div class='article-reference'>
+                                        @inproceedings{esann,
+                                            title = {Explainable ensemble learning for structural damage prediction under seismic events},
+                                            booktitle = {ESANN 2025 proceesdings},
+                                            publisher = {Ciaco - i6doc.com},
+                                            author = {Baldassini,  Michele and Foglia,  Pierfrancesco and Lazzerini,  Beatrice and Pistolesi,  Francesco and Prete,  Cosimo Antonio},
+                                            year = {2025},
+                                            month = apr,
+                                            pages = {609–614}
+                                        }
+                                    </div>
+                                    <div class='article-data'>
+                                        <button type='button' class='btn btn-outline-primary btn-modal' data-bs-toggle='modal' data-bs-target='#modal-cite' data-bs-filename='Explainable ensemble learning for structural damage prediction under seismic events'>Cite</button>
+                                        <a class='btn btn-outline-primary' href='https://doi.org/10.14428/esann/2025.ES2025-198' rel='noopener noreferrer nofollow' target='_blank'>PDF</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class='item' id='fast-and-interpretable-prediction-of-seismic-kinematics-of-flexible-retaining-walls-in-sand-through-explainable-artificial-intelligence' tabindex='0'>
+                            <div class='card-wrapper fade-up'>
+                                <div class='article'>
+                                    <h4 class='article-title'>Fast and interpretable prediction of seismic kinematics of flexible retaining walls in sand through explainable artificial intelligence</h4>
+                                    <div class='article-authors'>
+                                        <span>F. Pistolesi, M. Baldassini, E. Volpe, F. Focacci, E. Cattoni</span>
+                                    </div>
+                                    <div class='article-info'>
+                                        <span>Computers and Geotechnics,</span>
+                                        <span>vol. 179,</span>
+                                        <span>pp. 107007,</span>
+                                        <span>2025</span>
+                                    </div>
+                                    <div class='article-reference'>
+                                        @article{comge,
+                                            title = {{Fast and interpretable prediction of seismic kinematics of flexible retaining walls in sand through explainable artificial intelligence}},
+                                            volume = {179},
+                                            journal = {Computers and Geotechnics},
+                                            publisher = {Elsevier BV},
+                                            author = {Pistolesi, Francesco and Baldassini, Michele and Volpe, Evelina and Focacci, Francesco and Cattoni, Elisabetta},
+                                            year = {2025},
+                                            month = mar,
+                                            pages = {107007}
+                                        }
+                                    </div>
+                                    <div class='article-data'>
+                                        <button type='button' class='btn btn-outline-primary btn-modal' data-bs-toggle='modal' data-bs-target='#modal-cite' data-bs-filename='Fast and interpretable prediction of seismic kinematics of flexible retaining walls in sand through explainable artificial intelligence'>Cite</button>
+                                        <a class='btn btn-outline-primary' href='https://doi.org/10.1016/j.compgeo.2024.107007' rel='noopener noreferrer nofollow' target='_blank'>PDF</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class='item' id='a-lidar-based-recommendation-system-to-improve-sitting-posture-respecting-privacy' tabindex='0'>
+                            <div class='card-wrapper fade-up'>
+                                <div class='article'>
+                                    <h4 class='article-title'>A LiDAR-Based Recommendation System to Improve Sitting Posture Respecting Privacy</h4>
+                                    <div class='article-authors'>
+                                        <span>F. Pistolesi, M. Baldassini, B. Lazzerini</span>
+                                    </div>
+                                    <div class='article-info'>
+                                        <span>IEEE Journal of Biomedical and Health Informatics,</span>
+                                        <span>vol. 28,</span>
+                                        <span>no. 9,</span>
+                                        <span>pp. 5303–5311,</span>
+                                        <span>2024</span>
+                                    </div>
+                                    <div class='article-reference'>
+                                        @article{jbhi,
+                                            title = {{A LiDAR-Based Recommendation System to Improve Sitting Posture Respecting Privacy}},
+                                            volume = {28},
+                                            number = {9},
+                                            journal = {IEEE Journal of Biomedical and Health Informatics},
+                                            publisher = {Institute of Electrical and Electronics Engineers (IEEE)},
+                                            author = {Pistolesi,  Francesco and Baldassini,  Michele and Lazzerini,  Beatrice},
+                                            year = {2024},
+                                            month = sep,
+                                            pages = {5303–5311}
+                                        }
+                                    </div>
+                                    <div class='article-data'>
+                                        <button type='button' class='btn btn-outline-primary btn-modal' data-bs-toggle='modal' data-bs-target='#modal-cite' data-bs-filename='A LiDAR-Based Recommendation System to Improve Sitting Posture Respecting Privacy'>Cite</button>
+                                        <a class='btn btn-outline-primary' href='https://doi.org/10.1109/JBHI.2024.3404233' rel='noopener noreferrer nofollow' target='_blank'>PDF</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class='item' id='a-human-centric-system-combining-smartwatch-and-lidar-data-to-assess-the-risk-of-musculoskeletal-disorders-and-improve-ergonomics-of-industry-50-manufacturing-workers' tabindex='0'>
+                            <div class='card-wrapper fade-up'>
+                                <div class='article'>
+                                    <h4 class='article-title'>A Human-Centric System Combining Smartwatch and LiDAR Data to Assess the Risk of Musculoskeletal Disorders and Improve Ergonomics of Industry 5.0 Manufacturing Workers</h4>
+                                    <div class='article-authors'>
+                                        <span>F. Pistolesi, M. Baldassini, B. Lazzerini</span>
+                                    </div>
+                                    <div class='article-info'>
+                                        <span>Computers in Industry,</span>
+                                        <span>vol. 155,</span>
+                                        <span>pp. 104042,</span>
+                                        <span>2024</span>
+                                    </div>
+                                    <div class='article-reference'>
+                                        @article{comind,
+                                            title = {{A Human-Centric System Combining Smartwatch and LiDAR Data to Assess the Risk of Musculoskeletal Disorders and Improve Ergonomics of Industry 5.0 Manufacturing Workers}},
+                                            volume = {155},
+                                            journal = {Computers in Industry},
+                                            publisher = {Elsevier BV},
+                                            author = {Pistolesi,  Francesco and Baldassini,  Michele and Lazzerini,  Beatrice},
+                                            year = {2024},
+                                            month = feb,
+                                            pages = {104042}
+                                        }
+                                    </div>
+                                    <div class='article-data'>
+                                        <button type='button' class='btn btn-outline-primary btn-modal' data-bs-toggle='modal' data-bs-target='#modal-cite' data-bs-filename='A Human-Centric System Combining Smartwatch and LiDAR Data to Assess the Risk of Musculoskeletal Disorders and Improve Ergonomics of Industry 5.0 Manufacturing Workers'>Cite</button>
+                                        <a class='btn btn-outline-primary' href='https://doi.org/10.1016/j.compind.2023.104042' rel='noopener noreferrer nofollow' target='_blank'>PDF</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class='item' id='speech-based-detection-of-in-car-escalating-arguments-to-prevent-distracted-driving' tabindex='0'>
+                            <div class='card-wrapper fade-up'>
+                                <div class='article'>
+                                    <h4 class='article-title'>Speech-Based Detection of In-Car Escalating Arguments to Prevent Distracted Driving</h4>
+                                    <div class='article-authors'>
+                                        <span>F. Pistolesi, M. Baldassini, B. Lazzerini</span>
+                                    </div>
+                                    <div class='article-info'>
+                                        <span>2023 IEEE International Conference on Big Data (BigData),</span>
+                                        <span>pp. 5330–5337,</span>
+                                        <span>2023</span>
+                                    </div>
+                                    <div class='article-reference'>
+                                        @inproceedings{bigdata,
+                                            title = {{Speech-Based Detection of In-Car Escalating Arguments to Prevent Distracted Driving}},
+                                            booktitle = {2023 IEEE International Conference on Big Data (BigData)},
+                                            publisher = {IEEE},
+                                            author = {Pistolesi,  Francesco and Baldassini,  Michele and Lazzerini,  Beatrice},
+                                            year = {2023},
+                                            month = dec,
+                                            pages = {5330–5337}
+                                        }
+                                    </div>
+                                    <div class='article-data'>
+                                        <button type='button' class='btn btn-outline-primary btn-modal' data-bs-toggle='modal' data-bs-target='#modal-cite' data-bs-filename='Speech-Based Detection of In-Car Escalating Arguments to Prevent Distracted Driving'>Cite</button>
+                                        <a class='btn btn-outline-primary' href='https://doi.org/10.1109/BigData59044.2023.10386288' rel='noopener noreferrer nofollow' target='_blank'>PDF</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='all-article'>
+                            <div class='article-all'>
+                                <a class='ext-link' href='publications/'>
+                                    See all publications
+                                    <svg class='svg-back' width='20' height='20' viewBox='0 0 24 24' 
+                                         fill='none' stroke='currentColor' stroke-width='1.5' 
+                                         stroke-linecap='round' stroke-linejoin='round'>
+                                      <path d='M9 6l6 6-6 6'/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- END SECTION PUBLICATIONS -->
+
+        <!-- SECTION TALKS AND AWARDS-->
+        <section id='talks'>
+            <div class='container'>
+                <div class='row'>
+                    <div class='col-12 col-lg-2'>
+                        <h2>Talks &amp; Awards</h2>
+                    </div>
+                    <div class='cards col-12 col-lg-10'>
+                        <div class='item' id='esann-2025' tabindex='0'>
+                            <div class='card-wrapper fade-up'>
+                                <div class='card'>
+                                    <div class='card-body justify-content-center'>
+                                        <div class='icon h1'>
+                                            <span class='uim-svg'>
+                                                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'>
+                                                    <path d='M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z'/>
+                                                    <path d='M19 11h-2a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0z'/>
+                                                    <path d='M13 21.93V19.95A7.002 7.002 0 0 0 18.92 17h-2.02A5.003 5.003 0 0 1 13 19.9v-1.9h-2v1.9a5.003 5.003 0 0 1-3.9-2.9H5.08A7.002 7.002 0 0 0 11 19.95v1.98h2z'  stroke-width='1'/>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <div class='content'>
+                                            <h4 class='card-title'>ESANN 2025</h4>
+                                            <div class='card-subtitle'>
+                                                <a href='https://www.esann.org/proceedings/2025' rel='noopener noreferrer nofollow' target='_blank'>European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning</a>
+                                            </div>
+                                            <div class='card-text'>
+                                                <!-- <i class='fa-solid fa-calendar-alt' aria-hidden='true'></i> -->
+                                                <svg class='svg-calendar' width='15' height='15' viewBox='0 0 448 512' fill='currentcolor' stroke='currentcolor'>
+                                                    <path d='M0 464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V192H0v272zm320-196c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM192 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM64 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zM400 64h-48V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H160V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H48C21.5 64 0 85.5 0 112v48h448v-48c0-26.5-21.5-48-48-48z'/>
+                                                </svg>
+                                                23-25 April 2025
+                                                <span class='dot-divider'></span>
+                                                <!-- <i class='fa-solid fa-map-marker-alt' aria-hidden='true'></i> -->
+                                                <svg class='svg-map' width='15' height='15' viewBox='0 0 384 512' fill='currentcolor' stroke='currentcolor'>
+                                                    <path d='M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z'/>
+                                                </svg>
+                                                Bruges, Belgium
+                                            </div>
+                                            <div class='card-text'>Explainable Ensemble Learning for Structural Damage Prediction under Seismic Events</div>
+                                        </div>
+
+                                        <div class='big-icon h1 text-custom'>
+                                            <span class='uim-svg'>
+                                                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='1em' fill='currentColor'>
+                                                    <path d='M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z'/>
+                                                    <path d='M19 11h-2a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0z'/>
+                                                    <path d='M13 21.93V19.95A7.002 7.002 0 0 0 18.92 17h-2.02A5.003 5.003 0 0 1 13 19.9v-1.9h-2v1.9a5.003 5.003 0 0 1-3.9-2.9H5.08A7.002 7.002 0 0 0 11 19.95v1.98h2z'/>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class='item' id='aidi-2024' tabindex='0'>
+                            <div class='card-wrapper fade-up'>
+                                <div class='card'>
+                                    <div class='card-body justify-content-center'>
+                                        <div class='icon h1'>
+                                            <span class='uim-svg'>
+                                                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'>
+                                                    <path d='M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z'/>
+                                                    <path d='M19 11h-2a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0z'/>
+                                                    <path d='M13 21.93V19.95A7.002 7.002 0 0 0 18.92 17h-2.02A5.003 5.003 0 0 1 13 19.9v-1.9h-2v1.9a5.003 5.003 0 0 1-3.9-2.9H5.08A7.002 7.002 0 0 0 11 19.95v1.98h2z'  stroke-width='1'/>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <div class='content'>
+                                            <h4 class='card-title'>AIDI 2024</h4>
+                                            <div class='card-subtitle'>
+                                                <a href='https://www.aiditalia.it/spring-meeting-2024/' rel='noopener noreferrer nofollow' target='_blank'>AIDI Spring Meeting</a>
+                                            </div>
+                                            <div class='card-text'>
+                                                <!-- <i class='fa-solid fa-calendar-alt' aria-hidden='true'></i> -->
+                                                <svg class='svg-calendar' width='15' height='15' viewBox='0 0 448 512' fill='currentcolor' stroke='currentcolor'>
+                                                    <path d='M0 464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V192H0v272zm320-196c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM192 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM64 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zM400 64h-48V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H160V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H48C21.5 64 0 85.5 0 112v48h448v-48c0-26.5-21.5-48-48-48z'/>
+                                                </svg>
+                                                31 May-01 June 2024
+                                                <span class='dot-divider'></span>
+                                                <!-- <i class='fa-solid fa-map-marker-alt' aria-hidden='true'></i> -->
+                                                <svg class='svg-map' width='15' height='15' viewBox='0 0 384 512' fill='currentcolor' stroke='currentcolor'>
+                                                    <path d='M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z'/>
+                                                </svg>
+                                                Naples, Italy
+                                            </div>
+                                            <div class='card-text'>La cattiva postura sul lavoro si corregge con l'intelligenza artificiale</div>
+                                        </div>
+
+                                        <div class='big-icon h1 text-custom'>
+                                            <span class='uim-svg'>
+                                                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='1em' fill='currentColor'>
+                                                    <path d='M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z'/>
+                                                    <path d='M19 11h-2a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0z'/>
+                                                    <path d='M13 21.93V19.95A7.002 7.002 0 0 0 18.92 17h-2.02A5.003 5.003 0 0 1 13 19.9v-1.9h-2v1.9a5.003 5.003 0 0 1-3.9-2.9H5.08A7.002 7.002 0 0 0 11 19.95v1.98h2z'/>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class='item' id='media-spotlight' tabindex='0'>
+                            <div class='card-wrapper fade-up'>
+                                <div class='card'>
+                                    <div class='card-body justify-content-center'>
+                                        <div class='icon h1'>
+                                            <span class='uim-svg'>
+                                                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'>
+                                                    <path d='M12 2l2.89 6.26L22 9.27l-5 4.87L18.18 22 12 18.26 5.82 22 7 14.14 2 9.27l7.11-1.01L12 2z'/>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <div class='content'>
+                                            <h4 class='card-title'>Media Spotlight</h4>
+                                            <div class='card-subtitle'>
+                                                <a href='https://doi.org/10.1016/j.compind.2023.104042' rel='noopener noreferrer nofollow' target='_blank'>A Human-Centric System Combining Smartwatch and LiDAR Data to Assess the Risk of Musculoskeletal Disorders and Improve Ergonomics of Industry 5.0 Manufacturing Workers</a>
+                                            </div>
+                                            <div class='card-text'>
+                                                <!-- <i class='fa-solid fa-calendar-alt' aria-hidden='true'></i> -->
+                                                <svg class='svg-calendar' width='15' height='15' viewBox='0 0 448 512' fill='currentcolor' stroke='currentcolor'>
+                                                    <path d='M0 464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V192H0v272zm320-196c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM192 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM64 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zM400 64h-48V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H160V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H48C21.5 64 0 85.5 0 112v48h448v-48c0-26.5-21.5-48-48-48z'/>
+                                                </svg>
+                                                22 January 2024
+                                            </div>
+                                            <div class='card-text'>
+                                                Selection of a paper by the Press Office of the University of Pisa and subsequent publication of
+                                                articles in newspapers such as “La Repubblica”, “La Nazione”, and “Il Tirreno”. The article was
+                                                then selected by the RAI editorial staff and a report was broadcast on 22 January 2024 in the
+                                                two editions of Telegiornale RAI 3.
+                                            </div>
+                                        </div>
+                                    
+                                        <div class='big-icon h1 text-custom'>
+                                            <span class='uim-svg'>
+                                                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='1em' fill='currentColor'>
+                                                    <path d='M12 2l2.89 6.26L22 9.27l-5 4.87L18.18 22 12 18.26 5.82 22 7 14.14 2 9.27l7.11-1.01L12 2z'/>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='all-article'>
+                            <div class='article-all'>
+                                <a class='ext-link' href='talks_and_awards/'>
+                                    See all talks &amp; Awards  
+                                    <svg class='svg-back' width='20' height='20' viewBox='0 0 24 24' 
+                                         fill='none' stroke='currentColor' stroke-width='1.5' 
+                                         stroke-linecap='round' stroke-linejoin='round'>
+                                      <path d='M9 6l6 6-6 6'/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- END SECTION TALKS AND AWARDS-->
+
+       
+        <!-- SECTION CONTACT -->
+        <section id='contact' class='last-section'>
+            <div class='container'>
+                <div class='row'>
+                    <div class='col-12 col-lg-2'>
+                        <h2>Contact</h2>
+                    </div>
+                    <div class='col-12 col-lg-10'>
+                        <ul class='contact-ul'>
+                            <li>
+                                <!-- <i class='fa-li fa-solid fa-envelope fa-2x' aria-hidden='true'></i> -->
+                                <svg width='25' height='25' viewBox='0 0 512 512' fill='currentcolor' stroke='currentcolor'>
+                                    <path d='M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z'/>
+                                </svg>
+                                <div>
+                                    <a href='mailto:michele.baldassini@ing.unipi.it'>michele.baldassini@ing.unipi.it</a>
+                                </div>
+                            </li>
+                            <li>
+                                <!-- <i class='fa-li fa-solid fa-phone fa-2x' aria-hidden='true'></i> -->
+                                <svg class='svg-phone' width='25' height='25' viewBox='0 0 512 512' fill='currentcolor' stroke='currentcolor'>
+                                    <path d='M497.39 361.8l-112-48a24 24 0 0 0-28 6.9l-49.6 60.6A370.66 370.66 0 0 1 130.6 204.11l60.6-49.6a23.94 23.94 0 0 0 6.9-28l-48-112A24.16 24.16 0 0 0 122.6.61l-104 24A24 24 0 0 0 0 48c0 256.5 207.9 464 464 464a24 24 0 0 0 23.4-18.6l24-104a24.29 24.29 0 0 0-14.01-27.6z'/>
+                                </svg>
+                                <div>
+                                    <a href='tel:&#43;39%20050%20221%2027498'>&#43;39 050 221 27498</a>
+                                </div>
+                            </li>
+                            <li>
+                                <!-- <i class='fa-li fa-solid fa-map-marker fa-2x' aria-hidden='true'></i> -->
+                                <svg class='svg-map' width='25' height='25' viewBox='0 0 384 512' fill='currentcolor' stroke='currentcolor'>
+                                    <path d='M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z'/>
+                                </svg>
+                                <div>
+                                    Dipartimento di Ingegneria dell'Informazione
+                                    <span class='d-block'>
+                                        Largo Lucio Lazzarino 1, 56122, Pisa
+                                    </span>
+                                </div>
+                            </li>
+                            <li>
+                                <!-- <i class='fa-li fa-solid fa-compass fa-2x' aria-hidden='true'></i> -->
+                                <svg class='svg-compass' width='25' height='25' viewBox='0 0 496 512' fill='currentcolor' stroke='currentcolor'>
+                                    <path d='M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z'/>
+                                </svg>
+                                <div>
+                                    Building A, floor 2, room 5-045
+                                </div>
+                            </li>
+                        </ul>
+                        <div class='map-container'>
+                            <div id='map'></div>
+                        </div>
+                    </div>
+                </div>
+                <div class='body-footer mt-50'>
+                    <p>Last updated on 13 Mar 2025</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TO TOP -->
+        <a class='to-top' href='javascript:void(0)'>
+            <svg width='20' height='20' viewBox='-406 158 86 86' fill='currentcolor' stroke='currentcolor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+                <path d='M-325.9,223c1.4,1.3,3.5,1.3,4.9,0s1.4-3.5,0-4.8l-39.6-39.2c-1.4-1.3-3.5-1.3-4.9,0l-39.5,39.2c-1.4,1.3-1.4,3.5,0,4.8s3.5,1.3,4.9,0l37.1-35.7L-325.9,223z'/>
+            </svg>
+        </a>
+
+        <!-- FOOTER -->
+        <div class='pre-footer'></div>
+        <div class='footer'></div>
+
+        <!-- MODAL -->
+        <div id='modal-cite' class='modal fade' tabindex='-1' role='dialog' aria-labelledby='modal-cite' aria-hidden='true'>
+            <div class='modal-dialog modal-dialog-centered' role='document'>
+                <div class='modal-content'>
+                    <div class='modal-header'>
+                        <h5 class='modal-title'>Cite</h5>
+                        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                    </div>
+                    <div class='modal-body'>
+                        <pre><code class='reference'></code></pre>
+                    </div>
+                    <div class='modal-footer'>
+                        <button class='btn btn-outline-primary btn-copy' data-bs-toggle='tooltip' onclick='javascript:void(0);'>
+                            <i class='fa-solid fa-copy'></i>
+                            Copy
+                        </button>
+                        <a class='btn btn-outline-primary btn-download' href='javascript:void(0);'>
+                            <i class='fa-solid fa-download'></i>
+                            Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JAVASCRIPT FILES -->
+        <script type='text/javascript' src='js/assets/bootstrap-5.3.3.bundle.min.js'></script>
+        <script type='text/javascript' src='js/assets/fuse-7.0.0.js'></script>
+        <script type='text/javascript' src='js/main.js'></script>
+    </body>
+</html>
