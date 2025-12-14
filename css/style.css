@@ -1710,7 +1710,7 @@ html.dark-mode .card {
 .card-wrapper .card .uim-svg {
     display: inline-block;
     height: 1em;
-    vertical-align: -0.125em;
+    vertical-align: -0.05em;
     font-size: inherit;
     fill: var(--uim-color, currentColor);
 }
@@ -1724,7 +1724,7 @@ html.dark-mode .card {
 .timeline-wrapper .timeline .uim-svg {
     display: inline-block;
     height: 1em;
-    vertical-align: -0.125em;
+    vertical-align: -0.05em;
     font-size: inherit;
     fill: var(--uim-color, currentColor);
 }
