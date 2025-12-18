@@ -201,10 +201,9 @@ function initIsotope() {
                 sessionStorage.setItem(filterGroup, filterElement.value);
             });
         });
-
-
     }
 }
+
 
 function createSearchHitElement({key, title, info, type, link}) {
     const searchHit = document.createElement('div');
@@ -509,7 +508,6 @@ if (navType == true) {
     sessionStorage.removeItem('isNavbarOpen');
     // sessionStorage.removeItem('firstClick');
 
-    
     if (window.location.href.includes('publications')) {
         sessionStorage.removeItem('filter-search');
         sessionStorage.removeItem('pubtype');

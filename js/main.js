@@ -1,5 +1,4 @@
 
-
 function initializeFadeEffect() {
     const links = document.querySelectorAll('.ext-link');
     links.forEach(link => {
@@ -287,7 +286,7 @@ function collapseSearch(event) {
 
         searchCollapse.classList.toggle('active');
         searchToggler.classList.toggle('active');
-        sessionStorage.setItem('isSearchOpen', searchBar.classList.contains('active'));
+        sessionStorage.setItem('isSearchOpen', searchCollapse.classList.contains('active'));
     } 
 }
 
@@ -359,6 +358,7 @@ function sectionNavigation() {
         });
     });
 }
+
 
 function highlightActiveSection() {
     if (sectionClick)
@@ -542,7 +542,6 @@ function toggleBibEntry() {
         link.download = 'entry.bib';
         link.click();
     });
-
 }
 
 
@@ -695,37 +694,67 @@ async function initSearch(indexURI) {
         const data = await response.json();
         const fuseInstance = new Fuse(data, fuseOptions);
 
-        document.getElementById('search-input').addEventListener('keyup', (event) => {
-            clearTimeout(event.target.searchTimer);
-            sessionStorage.setItem('searchInput', document.getElementById('search-input').value);
+        const searchInput = document.getElementById('search-input');
+
+        const searchBar   = document.getElementById('searchBar');
+
+        searchInput.addEventListener('blur', (e) => {
+            if (e.relatedTarget === searchInput)
+                return;
+
+            setTimeout(() => {
+                if (document.activeElement !== searchInput &&
+                    searchBar.classList.contains('active')) {
+                    const searchResults = document.getElementById('search-results');
+                    const searchToggler = document.getElementById('btn-search');
+                    const searchCollapse = document.getElementById('searchBar');
+
+                    searchResults.classList.remove('visible');
+
+                    if (searchCollapse.classList.contains('active')) {
+                        searchCollapse.classList.remove('active');
+                        searchToggler.classList.remove('active');
+                        sessionStorage.setItem('isSearchOpen', 'false');
+                    }
+                }
+            }, 0);
+        });
+
+        const scheduleSearch = (force, el) => {
+            clearTimeout(el.searchTimer);
+            sessionStorage.setItem('searchInput', el.value);
+            el.searchTimer = setTimeout(() => startSearch(force, fuseInstance), 375);
+        };
+
+        searchInput.addEventListener('keyup', (event) => {
             if (event.key === 'Enter') {
+                clearTimeout(event.target.searchTimer);
                 startSearch(true, fuseInstance);
-            } else {
-                event.target.searchTimer = setTimeout(() => {
-                    startSearch(false, fuseInstance);
-                }, 375);
+                return;
             }
+            scheduleSearch(false, event.target);
         });
-        document.getElementById('search-input').addEventListener('mousedown', (event) => {
+
+        searchInput.addEventListener('input', () => {
+            scheduleSearch(false, event.target);
             setTimeout(() => {
-                const val = document.getElementById('search-input').value;
-                document.getElementById('search-input').setSelectionRange(val.length, val.length);
+                const val = searchInput.value;
+                searchInput.setSelectionRange(val.length, val.length);
+            }, 0);
+        });
+
+        searchInput.addEventListener('mousedown', (event) => {
+            setTimeout(() => {
+                const val = searchInput.value;
+                searchInput.setSelectionRange(val.length, val.length);
             }, 0);
         });
 
 
-        document.getElementById('search-input').addEventListener('touchend', () => {
+        searchInput.addEventListener('touchend', () => {
             setTimeout(() => {
-                const val = document.getElementById('search-input').value;
-                document.getElementById('search-input').setSelectionRange(val.length, val.length);
-            }, 0);
-        });
-
-
-        document.getElementById('search-input').addEventListener('input', () => {
-            setTimeout(() => {
-                const val = document.getElementById('search-input').value;
-                document.getElementById('search-input').setSelectionRange(val.length, val.length);
+                const val = searchInput.value;
+                searchInput.setSelectionRange(val.length, val.length);
             }, 0);
         });
 
@@ -796,7 +825,6 @@ var timeout_animate;
 var currentTop;
 var currentBottom;
 var sectionClick = false;
-
 
 const COOKIE_DURATION_DAYS = 365;
 
@@ -888,6 +916,7 @@ document.addEventListener('DOMContentLoaded', function () {
         collapseSearch(event);
         collapseNavbar(event);
     });
+
 
     window.addEventListener('scroll', function () {
         squeezeNavbar();
