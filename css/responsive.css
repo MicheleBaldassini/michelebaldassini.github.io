@@ -286,6 +286,7 @@
     .last-section #teaching .main-timeline .timeline .timeline-content {
         padding: 0 0 0 1%;
     }
+
 }
 
 @media screen and (max-width: 1200px) {
@@ -555,6 +556,12 @@
 
     #bio .row > div:not(:first-of-type) h3 {
         margin-top: 0.5rem;
+    }
+}
+
+@media screen and (max-width: 490px) {
+    .br {
+        display: block;
     }
 }
 

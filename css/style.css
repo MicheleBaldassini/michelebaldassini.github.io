@@ -2259,3 +2259,7 @@ html.refreshed .cookie-window.hidden {
     background-color: rgba(0, 200, 170, 1);
     transition: background-color 0.3s ease;
 }
+
+.br {
+    display: inline;
+}
