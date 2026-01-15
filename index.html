@@ -65,14 +65,18 @@
         <script type='application/ld+json'>
             {
                 "@context": "https://schema.org",
-                "@type": "ImageObject",
-                "@id": "https://michelebaldassini.github.io/images/photo#image",
-                "contentUrl": "https://michelebaldassini.github.io/images/photo.jpg",
-                "url": "https://michelebaldassini.github.io/index.html",
-                "width": 420,
-                "height": 420,
-                "caption": "Portrait photo",
-                "inLanguage": "it-IT"
+                "@graph": [
+                    {
+                        "@type": "ImageObject",
+                        "@id": "https://michelebaldassini.github.io/images/photo.jpg",
+                        "contentUrl": "https://michelebaldassini.github.io/images/photo.jpg",
+                        "url": "https://michelebaldassini.github.io/images/photo.jpg",
+                        "width": 420,
+                        "height": 420,
+                        "caption": "Portrait photo",
+                        "inLanguage": "en-US"
+                    }
+                ]
             }
         </script>
 
