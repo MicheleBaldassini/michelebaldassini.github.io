@@ -6,6 +6,7 @@
 html {
     -ms-overflow-style: none;
     scrollbar-width: none;
+    overscroll-behavior-y: none;
 }
 
 html::-webkit-scrollbar {
@@ -19,6 +20,7 @@ body {
     margin-top: 80px;
     opacity: 0;
     padding-top: 0;
+    overscroll-behavior-y: none;
 }
 
 html.fade-in body {
@@ -211,10 +213,16 @@ html.dark-mode .toggle-button svg {
 /* Navbar */
 html.light-mode .navbar {
     background-color: rgba(240, 240, 240, 1);
+    border-bottom: 1px solid rgba(240, 240, 240, 1);
 }
 
 html.dark-mode .navbar {
     background-color: rgba(50, 50, 50, 1);
+    border-bottom: 1px solid rgba(50, 50, 50, 1);
+}
+
+.navbar-collapse {
+    background-clip: padding-box;
 }
 
 html.light-mode .navbar-collapse {
@@ -274,7 +282,13 @@ html.dark-mode .nav-item.active .nav-link {
 }
 
 .navbar {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    will-change: transform, height;
     transition: box-shadow 0.1s ease;
+    background-clip: padding-box;
 }
 
 .navbar.show-navbar {
