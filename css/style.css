@@ -1170,10 +1170,17 @@ html.dark-mode section:nth-of-type(even) {
     top: 100%;
 }
 
-.main-timeline .timeline-icon:before {
+.main-timeline .timeline .timeline-icon:before {
     background: rgba(0, 148, 133, 1);
     border: 2px solid rgba(0, 148, 133, 1);
     left: 3px;
+}
+
+.main-timeline .timeline:hover .timeline-icon:before {
+    background: rgba(0, 200, 170, 1);
+    border: 2px solid rgba(0, 200, 170, 1);
+    left: 3px;
+    transition: border 0.3s ease, background-color 0.3s ease;
 }
 
 .main-timeline .timeline-icon:after {
@@ -1205,10 +1212,17 @@ html.dark-mode section:nth-of-type(even) {
     left: 3px;
 }
 
-#teaching .main-timeline .timeline-icon:before {
+#teaching .main-timeline .timeline .timeline-icon:before {
     background: rgba(0, 148, 133, 1);
     border: 2px solid rgba(0, 148, 133, 1);
     left: 3px;
+}
+
+#teaching .main-timeline .timeline:hover .timeline-icon:before {
+    background: rgba(0, 200, 170, 1);
+    border: 2px solid rgba(0, 200, 170, 1);
+    left: 3px;
+    transition: border 0.3s ease, background-color 0.3s ease;
 }
 
 #teaching .main-timeline .timeline-icon:after {
@@ -1301,6 +1315,8 @@ html.dark-mode .main-timeline .date-outer:before {
 
 .main-timeline .timeline:hover .date-outer:before {
     left: 6px;
+    border: 2px solid rgba(0, 200, 170, 1);
+    transition: border 0.3s ease;
 }
 
 .main-timeline .timeline:hover .date-outer:after {
@@ -1317,6 +1333,8 @@ html.dark-mode .main-timeline .date-outer:before {
 
 .main-timeline .item:nth-child(even):hover .date-outer:before {
     left: -6px;
+    border: 2px solid rgba(0, 200, 170, 1);
+    transition: border 0.3s ease;
 }
 
 .main-timeline .item:nth-child(even):hover .date-outer:after {
