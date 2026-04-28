@@ -527,6 +527,7 @@ a.colored {
 }
 
 .not-half {
+    margin-top: 0.75em;
     width: 50%;
     margin-left: auto;
     margin-right: auto;
@@ -577,6 +578,7 @@ a.colored {
     }
 
     .not-half {
+        margin-top: 0;
         width: 100%;
         margin-left: 0;
         margin-right: 0;
