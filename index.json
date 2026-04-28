@@ -30,6 +30,30 @@
         "link": "https://michelebaldassini.github.io/teaching/intelligent_systems/"
     },
     {
+        "title": "Foot-Strike Pattern Recognition from Inertial Data with Machine Learning",
+        "info": "International Symposium on Multimedia (ISM), pp. 172-179",
+        "section": "publications",
+        "link": "https://michelebaldassini.github.io/publications/#foot-strike-pattern-recognition-from-inertial-data-with-machine-learning"
+    },
+    {
+        "title": "The Sustainability Card: Measuring Sustainability of Multimedia AI Models",
+        "info": "International Symposium on Multimedia (ISM), pp. 180-181",
+        "section": "publications",
+        "link": "https://michelebaldassini.github.io/publications/#the-sustainability-card-measuring-sustainability-ofmultimedi-ai-models"
+    },
+    {
+        "title": "Don’t call it privacy-preserving or human-centric pose estimation if you don’t measure privacy",
+        "info": "International Conference on Neural Information Processing Systems (NeurIPS)",
+        "section": "publications",
+        "link": "https://michelebaldassini.github.io/publications/#dont-call-it-privacy-preserving-or-human-centric-pose-estimation-if-you-dont-measure-privacy"
+    },
+    {
+        "title": "AI-based Simulation Surrogates for Planning Rainfall-induced Landslide Mitigation",
+        "info": "ECAI Workshop on AI-based Planning for Complex Real-World Applications (CAIPI 2025), vol. 4103",
+        "section": "publications",
+        "link": "https://michelebaldassini.github.io/publications/#ai-based-simulation-surrogates-for-planning-rainfall-induced-landslide-mitigation"
+    },
+    {
         "title": "Explainable Ensemble Learning for Structural Damage Prediction under Seismic Events",
         "info": "European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning (ESANN), pp. 609\u2013614, 2025",
         "section": "publications",
@@ -78,10 +102,34 @@
         "link": "https://michelebaldassini.github.io/publications/#detecting-happiness-from-14-channel-binary-valued-eeg-charts-via-deep-learning"
     },
     {
+        "title": "ISM 2025",
+        "info": "Foot-Strike Pattern Recognition from Inertial Data with Machine Learning",
+        "section": "talks",
+        "link": "https://michelebaldassini.github.io/talks_and_awards/#ism-2025"
+    },
+    {
+        "title": "NeurIPS 2025",
+        "info": "Don’t call it privacy-preserving or human-centric pose estimation if you don’t measure privacy",
+        "section": "talks",
+        "link": "https://michelebaldassini.github.io/talks_and_awards/#neurips-2025"
+    },
+    {
+        "title": "CAIPI 2025",
+        "info": "AI-based Simulation Surrogates for Planning Rainfall-induced Landslide Mitigation",
+        "section": "talks",
+        "link": "https://michelebaldassini.github.io/talks_and_awards/#caipi-2025"
+    },
+    {
         "title": "ESANN 2025",
         "info": "Explainable Ensemble Learning for Structural Damage Prediction under Seismic Events",
         "section": "talks",
         "link": "https://michelebaldassini.github.io/talks_and_awards/#esann-2025"
+    },
+    {
+        "title": "Featured Article",
+        "info": "A LiDAR-Based Recommendation System to Improve Sitting Posture Respecting Privacy",
+        "section": "talks",
+        "link": "https://michelebaldassini.github.io/talks_and_awards/#featured-article"
     },
     {
         "title": "AIDI 2024",

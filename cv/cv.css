@@ -521,10 +521,16 @@ a.colored {
 }
 
 .talks .half .ul,
+.talks .not-half .ul,
 .software .half .ul {
     font-size: .95em;
 }
 
+.not-half {
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 .d-block {
     display: block;
@@ -570,6 +576,12 @@ a.colored {
         grid-template-columns: 1fr;
     }
 
+    .not-half {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
     .talks .li.pub {
         margin-top: 0.5em;
     }
@@ -579,6 +591,14 @@ a.colored {
     }
 
     .talks .half:first-of-type .ul .li.pub:first-of-type {
+        margin-top: 0;
+    }
+
+    .talks .not-half:first-of-type .ul .li.pub {
+        margin-top: 0.5em;
+    }
+
+    .talks .not-half:first-of-type .ul .li.pub:first-of-type {
         margin-top: 0;
     }
 
@@ -690,7 +710,7 @@ a.colored {
         padding-right: 0;
     }
 
-    .half {
+    .half, .not-half {
         width: 100%;
     }
 

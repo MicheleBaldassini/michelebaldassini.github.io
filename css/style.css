@@ -198,15 +198,18 @@ html.dark-mode .toggle-button svg {
 
 #sun:hover,
 #moon:hover,
-#search:hover {
+#search:hover,
+#collapse-search:hover {
     color: #7fc9c2;
 }
 
-#btn-search.active #search {
+#btn-search.active #search,
+#btn-search.active #collapse-search {
     color: #7fc9c2;
 }
 
-#btn-search.active-refreshed #search {
+#btn-search.active-refreshed #search,
+#btn-search.active-refreshed #collapse-search {
     color: #7fc9c2;
 }
 
@@ -512,7 +515,8 @@ html.dark-mode #search-input::placeholder {
     color: white;
 }
 
-html.dark-mode #search {
+html.dark-mode #search,
+html.dark-mode #collapse-search {
     color: white;
 }
 
@@ -1739,6 +1743,12 @@ html.dark-mode .card {
     font-size: 150px;
 }
 
+.card-wrapper .card:hover .big-icon.posters {
+    z-index: -1;
+    opacity: 0.1;
+    font-size: 125px;
+}
+
 .card-wrapper .card .uim-svg {
     display: inline-block;
     height: 1em;
@@ -1751,6 +1761,12 @@ html.dark-mode .card {
     z-index: -1;
     opacity: 0.1;
     font-size: 150px;
+}
+
+.timeline-wrapper .timeline:hover .big-icon.posters {
+    z-index: -1;
+    opacity: 0.1;
+    font-size: 125px;
 }
 
 .timeline-wrapper .timeline .uim-svg {

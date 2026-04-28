@@ -690,11 +690,13 @@
 }
 
 @media only screen and (hover: none) and (pointer: coarse) {
-    html.light-mode #search:hover {
+    html.light-mode #search:hover,
+    html.light-mode #collapse-search:hover {
         color: rgba(50, 50, 50, 1);
     }
 
-    html.dark-mode #search:hover {
+    html.dark-mode #search:hover,
+    html.dark-mode #collapse-search:hover {
         color: rgba(240, 240, 240, 1);
     }
 }
