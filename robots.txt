@@ -2,4 +2,4 @@ User-agent: *
 Disallow: /*?
 Allow: /
 
-Sitemap: https://michelebalda.altervista.org/sitemap.xml
+Sitemap: https://michelebaldassini.github.io/sitemap.xml
