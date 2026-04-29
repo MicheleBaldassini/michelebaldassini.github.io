@@ -836,6 +836,9 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.addEventListener('click', () => {
         setConsent();
         banner.classList.add('hidden');
+        banner.addEventListener('transitionend', () => {
+            banner.style.display = 'none';
+        }, { once: true });
     });
 
     currentBottom = parseFloat(window.getComputedStyle(document.getElementsByClassName('to-top')[0]).bottom);
