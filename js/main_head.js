@@ -434,8 +434,15 @@ if (navType == true) {
                     targetLink.parentElement.classList.add('active');
             }
 
+        const banner = document.querySelector('.cookie-window');
         if (!hasConsent())
-            document.querySelector('.cookie-window').classList.remove('hidden');
+            banner.classList.remove('hidden');
+        else {
+            banner.classList.add('hidden');
+            banner.addEventListener('transitionend', () => {
+                banner.style.display = 'none';
+            }, { once: true });
+        }
 
         const savedResults = sessionStorage.getItem('searchResults');
 
