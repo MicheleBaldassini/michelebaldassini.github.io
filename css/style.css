@@ -1184,7 +1184,7 @@ html.dark-mode section:nth-of-type(even) {
     background: rgba(0, 200, 170, 1);
     border: 2px solid rgba(0, 200, 170, 1);
     left: 3px;
-    transition: border 0.3s ease, background-color 0.3s ease;
+/*    transition: border 0.3s ease, background-color 0.3s ease;*/
 }
 
 .main-timeline .timeline-icon:after {
@@ -1226,7 +1226,7 @@ html.dark-mode section:nth-of-type(even) {
     background: rgba(0, 200, 170, 1);
     border: 2px solid rgba(0, 200, 170, 1);
     left: 3px;
-    transition: border 0.3s ease, background-color 0.3s ease;
+/*    transition: border 0.3s ease, background-color 0.3s ease;*/
 }
 
 #teaching .main-timeline .timeline-icon:after {
