@@ -1320,7 +1320,7 @@ html.dark-mode .main-timeline .date-outer:before {
 .main-timeline .timeline:hover .date-outer:before {
     left: 6px;
     border: 2px solid rgba(0, 200, 170, 1);
-    transition: border 0.3s ease;
+/*    transition: border 0.3s ease;*/
 }
 
 .main-timeline .timeline:hover .date-outer:after {
@@ -1338,7 +1338,7 @@ html.dark-mode .main-timeline .date-outer:before {
 .main-timeline .item:nth-child(even):hover .date-outer:before {
     left: -6px;
     border: 2px solid rgba(0, 200, 170, 1);
-    transition: border 0.3s ease;
+/*    transition: border 0.3s ease;*/
 }
 
 .main-timeline .item:nth-child(even):hover .date-outer:after {
