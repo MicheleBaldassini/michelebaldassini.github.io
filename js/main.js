@@ -3,6 +3,11 @@ function initializeFadeEffect() {
     const links = document.querySelectorAll('.ext-link');
     links.forEach(link => {
         link.addEventListener('click', (e) => {
+            if (e.defaultPrevented || e.button !== 0 || e.ctrlKey || e.metaKey ||
+                e.shiftKey || e.altKey || link.hasAttribute('download') ||
+                (link.target && link.target !== '_self'))
+                return;
+
             e.preventDefault();
             const url = link.getAttribute('href');
 
@@ -16,22 +21,7 @@ function initializeFadeEffect() {
                 searchButton.classList.remove('active');
             }
 
-            if (document.documentElement.classList.contains('fade-in'))
-                document.documentElement.classList.remove('fade-in');
-
-            if (!document.documentElement.classList.contains('fade-out'))
-                document.documentElement.classList.add('fade-out');
-
-            if (!document.documentElement.classList.contains('refreshed'))
-                document.documentElement.classList.add('refreshed');
-
-            setTimeout(() => {
-                document.getElementById('search-results').replaceChildren();
-                sessionStorage.setItem('searchInput', '');
-                setTimeout(() => {
-                    window.location.assign(url);
-                }, 50);
-            }, 500);
+            navigateWithFade(url);
         });
     });
 }
@@ -844,10 +834,10 @@ document.addEventListener('DOMContentLoaded', function () {
     currentBottom = parseFloat(window.getComputedStyle(document.getElementsByClassName('to-top')[0]).bottom);
 
     toggleTheme();
+    initializeFadeEffect();
     if (navType == false) {
         if (!hasConsent())
             banner.classList.remove('hidden');
-        initializeFadeEffect();
         squeezeNavbar();
     }
 
@@ -1034,28 +1024,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    revealPage();
 });
 
 
-window.addEventListener('unload', (event) => {
-    if (document.documentElement.classList.contains('fade-in'))
-        document.documentElement.classList.remove('fade-in');
-    if (document.documentElement.classList.contains('fade-out'))
-        document.documentElement.classList.remove('fade-out');
-});
-
-
-window.addEventListener('pagehide', (event) => {
-    if (document.documentElement.classList.contains('fade-in'))
-        document.documentElement.classList.remove('fade-in');
-    if (document.documentElement.classList.contains('fade-out'))
-        document.documentElement.classList.remove('fade-out');
-});
-
-
+// Keep the cover in place while leaving; reveal cached pages when returning.
 window.addEventListener('pageshow', (event) => {
-    if (navType != true) {
-        if (!document.documentElement.classList.contains('fade-in'))
-            document.documentElement.classList.add('fade-in');
-    }
+    if (event.persisted)
+        revealPage();
 });

@@ -15,6 +15,57 @@ if (!metaTag) {
 metaTag.setAttribute('content', theme_color);
 
 
+let pageNavigationPending = false;
+
+function revealPage() {
+    const root = document.documentElement;
+    root.classList.remove('fade-out');
+    pageNavigationPending = false;
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => root.classList.add('fade-in'));
+    });
+}
+
+function navigateWithFade(url) {
+    if (pageNavigationPending)
+        return;
+
+    const destination = new URL(url, window.location.href);
+    if (destination.origin !== window.location.origin) {
+        window.location.assign(destination.href);
+        return;
+    }
+
+    pageNavigationPending = true;
+    const root = document.documentElement;
+    const cover = window.getComputedStyle(root, '::before');
+    const duration = parseFloat(cover.transitionDuration) * 1000 || 0;
+    let fallback;
+    let navigated = false;
+
+    const navigate = () => {
+        if (navigated)
+            return;
+        navigated = true;
+        clearTimeout(fallback);
+        root.removeEventListener('transitionend', onCovered);
+        document.getElementById('search-results').replaceChildren();
+        sessionStorage.setItem('searchInput', '');
+        window.location.assign(destination.href);
+    };
+    const onCovered = (event) => {
+        if (event.target === root && event.pseudoElement === '::before' &&
+            event.propertyName === 'opacity')
+            navigate();
+    };
+
+    root.addEventListener('transitionend', onCovered);
+    root.classList.remove('fade-in');
+    root.classList.add('fade-out');
+    fallback = setTimeout(navigate, duration + 80);
+}
+
+
 function detectReload() {
     const navType = performance.getEntriesByType('navigation')[0].type;
     if (navType === 'reload' || navType === 'back_forward')
@@ -251,29 +302,12 @@ function createSearchHitElement({key, title, info, type, link}) {
                 searchButton.classList.remove('active');
             }
 
-            if (document.documentElement.classList.contains('fade-in'))
-                document.documentElement.classList.remove('fade-in');
-
-            if (!document.documentElement.classList.contains('fade-out'))
-                document.documentElement.classList.add('fade-out');
-
-            if (!document.documentElement.classList.contains('refreshed'))
-                document.documentElement.classList.add('refreshed');
-
             const l = link.split('#')[0];
             const p = link.split('#')[1] || '';
 
-            setTimeout(() => {
-                document.getElementById('search-results').replaceChildren();
-                sessionStorage.setItem('searchInput', '');
-
-                setTimeout(() => {
-                    window.location.assign(l);
-                }, 50);
-            }, 500);
-
             if (p !== '')
                 sessionStorage.setItem('scrollTo', p);
+            navigateWithFade(l);
         }
     });
     

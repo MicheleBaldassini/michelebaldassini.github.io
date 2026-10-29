@@ -19,24 +19,41 @@ body {
     -ms-tap-highlight-color: transparent;
     margin-top: 80px;
     background-color: inherit;
-    opacity: 0;
     padding-top: 0;
     overscroll-behavior-y: none;
 }
 
-html.fade-in body {
+/* Keep an opaque page behind the transition, including on mobile. */
+html::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    background-color: inherit;
     opacity: 1;
-    transition: opacity 0.5s ease-out;
+    pointer-events: auto;
+    transition: opacity 0.35s ease-in-out;
 }
 
-html.fade-out body {
+html.fade-in::before,
+html.refreshed::before {
     opacity: 0;
-    transition: opacity 0.5s ease-in;
+    pointer-events: none;
 }
 
-html.refreshed body {
+html.fade-out::before {
     opacity: 1;
-    transition: none;
+    pointer-events: auto;
+}
+
+html.fade-out {
+    cursor: progress;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html::before {
+        transition: none;
+    }
 }
 
 h1, h2, h3, h4, h5, h6 {
