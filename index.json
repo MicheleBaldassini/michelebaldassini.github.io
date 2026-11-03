@@ -104,37 +104,37 @@
     {
         "title": "ISM 2025",
         "info": "Foot-Strike Pattern Recognition from Inertial Data with Machine Learning",
-        "section": "talks & awards",
+        "section": "talks",
         "link": "https://michelebaldassini.github.io/talks_and_awards/#ism-2025"
     },
     {
         "title": "NeurIPS 2025",
         "info": "Don’t call it privacy-preserving or human-centric pose estimation if you don’t measure privacy",
-        "section": "talks & awards",
+        "section": "talks",
         "link": "https://michelebaldassini.github.io/talks_and_awards/#neurips-2025"
     },
     {
         "title": "CAIPI 2025",
         "info": "AI-based Simulation Surrogates for Planning Rainfall-induced Landslide Mitigation",
-        "section": "talks & awards",
+        "section": "talks",
         "link": "https://michelebaldassini.github.io/talks_and_awards/#caipi-2025"
     },
     {
         "title": "ESANN 2025",
         "info": "Explainable Ensemble Learning for Structural Damage Prediction under Seismic Events",
-        "section": "talks & awards",
+        "section": "talks",
         "link": "https://michelebaldassini.github.io/talks_and_awards/#esann-2025"
     },
     {
         "title": "Featured Article",
         "info": "A LiDAR-Based Recommendation System to Improve Sitting Posture Respecting Privacy",
-        "section": "talks & awards",
+        "section": "talks",
         "link": "https://michelebaldassini.github.io/talks_and_awards/#featured-article"
     },
     {
         "title": "AIDI 2024",
         "info": "La cattiva postura sul lavoro si corregge con l\u2019intelligenza artificiale",
-        "section": "talks & awards",
+        "section": "talks",
         "link": "https://michelebaldassini.github.io/talks_and_awards/#aidi-2024"
     },
     {
@@ -146,7 +146,7 @@
     {
         "title": "BigData 2023",
         "info": "Speech-Based Detection of In-Car Escalating Arguments to Prevent Distracted Driving",
-        "section": "talks & awards",
+        "section": "talks",
         "link": "https://michelebaldassini.github.io/talks_and_awards/#bigdata-2023"
     },
     {
@@ -158,7 +158,7 @@
     {
         "title": "ISM 2022",
         "info": "Detecting happiness from 14-channel binary-valued EEG charts via deep learning",
-        "section": "talks & awards",
+        "section": "talks",
         "link": "https://michelebaldassini.github.io/talks_and_awards/#ism-2022"
     }
 ]
