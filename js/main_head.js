@@ -140,7 +140,7 @@ function initializeReloadTransition() {
     });
 
     // Hold the reload response until the outgoing document has faded out.
-    const workerURL = new URL('js/page-transitions.js', siteIndexURL);
+    const workerURL = new URL('page-transitions.js', siteIndexURL);
     navigator.serviceWorker.register(workerURL, {updateViaCache: 'none'}).catch(() => {});
 }
 
