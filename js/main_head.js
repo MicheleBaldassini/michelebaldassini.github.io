@@ -152,6 +152,16 @@ async function replayReloadFade() {
         saved.width !== window.innerWidth)
         return;
 
+    // The portrait is a CSS background: wait for its pixels before either reveal.
+    const portrait = document.querySelector('.portrait-image .img');
+    const portraitURL = portrait && getComputedStyle(portrait).backgroundImage
+        .match(/^url\(["']?(.*?)["']?\)$/)?.[1];
+    const portraitImage = portraitURL ? new Image() : null;
+    if (portraitImage) {
+        portraitImage.src = portraitURL;
+        await portraitImage.decode().catch(() => {});
+    }
+
     const freshBody = document.body;
     const preview = new DOMParser().parseFromString(saved.body, 'text/html').body;
     preview.inert = true;
@@ -164,6 +174,8 @@ async function replayReloadFade() {
     root.classList.remove('refresh-preview');
     await coverPage();
     document.body.replaceWith(freshBody);
+    if (portraitImage)
+        await portraitImage.decode().catch(() => {});
     for (const [key, value] of Object.entries(saved.storage)) {
         if (value === null)
             sessionStorage.removeItem(key);
