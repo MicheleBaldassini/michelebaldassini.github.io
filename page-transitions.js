@@ -2,18 +2,42 @@
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
 
+function currentClientURL(client) {
+    return new Promise(resolve => {
+        const channel = new MessageChannel();
+        const finish = url => {
+            clearTimeout(timeout);
+            channel.port1.close();
+            resolve({client, url});
+        };
+        const timeout = setTimeout(() => finish(null), 400);
+        channel.port1.onmessage = event => finish(event.data);
+        try {
+            client.postMessage({type: 'site-reload-url'}, [channel.port2]);
+        } catch (error) {
+            finish(null);
+        }
+    });
+}
+
 async function coverReloadingClient(event) {
     const url = new URL(event.request.url);
     url.hash = '';
     const clientID = event.clientId || event.replacesClientId;
     let client = clientID ? await self.clients.get(clientID) : undefined;
-    if (!client || client.url.split('#')[0] !== url.href) {
-        // Firefox does not expose the outgoing client ID on a reload.
+    if (!client) {
+        // Client.url keeps the initial document URL after an internal navigation.
+        // Firefox also omits the outgoing client ID, so ask the pages themselves.
         const clients = await self.clients.matchAll({type: 'window'});
-        const matches = clients.filter(candidate => candidate.url.split('#')[0] === url.href);
-        if (matches.length !== 1)
-            return;
-        client = matches[0];
+        if (clients.length === 1) {
+            client = clients[0];
+        } else {
+            const locations = await Promise.all(clients.map(currentClientURL));
+            const matches = locations.filter(candidate => candidate.url === url.href);
+            if (matches.length !== 1)
+                return;
+            client = matches[0].client;
+        }
     }
 
     await new Promise(resolve => {

@@ -157,12 +157,16 @@ function initializeReloadTransition() {
         return;
 
     navigator.serviceWorker.addEventListener('message', async event => {
-        if (event.source !== navigator.serviceWorker.controller ||
-            event.data?.type !== 'site-reload-cover' || !event.ports[0])
+        if (event.source !== navigator.serviceWorker.controller || !event.ports[0])
             return;
         const current = new URL(window.location.href);
         current.hash = '';
-        if (event.data.url !== current.href)
+        if (event.data?.type === 'site-reload-url') {
+            event.ports[0].postMessage(current.href);
+            event.ports[0].close();
+            return;
+        }
+        if (event.data?.type !== 'site-reload-cover' || event.data.url !== current.href)
             return;
 
         rememberReloadState();
