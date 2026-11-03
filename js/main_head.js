@@ -594,6 +594,13 @@ function initIsotope() {
 
 
 function createSearchHitElement({key, title, info, type, link}) {
+    const destination = new URL(link, siteIndexURL);
+    if (destination.origin !== window.location.origin &&
+        ['michelebalda.altervista.org', 'michelebaldassini.github.io'].includes(destination.hostname.replace(/^www\./, ''))) {
+        // Keep this site's indexed links on the host and base path currently in use.
+        destination.href = new URL(destination.pathname.replace(/^\/+/, '') + destination.search + destination.hash,
+            new URL('./', siteIndexURL)).href;
+    }
     const searchHit = document.createElement('div');
     searchHit.className = 'search-hit';
     searchHit.id = `summary-${key}`;
@@ -622,8 +629,12 @@ function createSearchHitElement({key, title, info, type, link}) {
         if (!searchBar.isConnected || pageNavigationPending || pageReloadPending)
             return;
 
-        if (window.location.href.split('#')[0] === link.split('#')[0]) {
-            const targetElement = document.getElementById(link.split('#')[1]);
+        const current = new URL(window.location.href);
+        const pagePath = url => url.pathname.replace(/\/index\.html$/, '/').replace(/\/+$/, '');
+        const targetID = decodeURIComponent(destination.hash.slice(1));
+        sessionStorage.removeItem('scrollTo');
+        if (current.origin === destination.origin && pagePath(current) === pagePath(destination)) {
+            const targetElement = document.getElementById(targetID);
             const offsetPosition = targetElement
                 ? targetElement.getBoundingClientRect().top + window.scrollY - 116
                 : 0;
@@ -633,12 +644,11 @@ function createSearchHitElement({key, title, info, type, link}) {
             });
         } else {
 
-            const l = link.split('#')[0];
-            const p = link.split('#')[1] || '';
-
-            if (p !== '')
-                sessionStorage.setItem('scrollTo', p);
-            navigateWithFade(l);
+            const pageURL = new URL(destination.href);
+            pageURL.hash = '';
+            if (targetID)
+                sessionStorage.setItem('scrollTo', targetID);
+            navigateWithFade(pageURL.href);
         }
     });
     
