@@ -17,6 +17,7 @@ metaTag.setAttribute('content', theme_color);
 
 
 let pageNavigationPending = false;
+let pageReloadPending = false;
 let pageMap;
 let navType = detectReload();
 let activePageURL = window.location.href;
@@ -58,17 +59,36 @@ function requestPageFrame(callback) {
 }
 
 function revealPage() {
+    if (pageReloadPending)
+        return;
     const root = document.documentElement;
     const bar = document.getElementById('myBar');
     bar?.classList.add('no-animations');
-    root.classList.remove('fade-out');
-    pageNavigationPending = false;
     requestPageFrame(() => {
         if (bar)
             progressBar();
+        squeezeNavbar();
         requestPageFrame(() => {
-            bar?.classList.remove('no-animations');
+            if (pageReloadPending)
+                return;
+            let fallback;
+            const revealed = event => {
+                if (event && (event.target !== root || event.pseudoElement !== '::before' ||
+                    event.propertyName !== 'opacity' || root.classList.contains('fade-out')))
+                    return;
+                clearTimeout(fallback);
+                root.removeEventListener('transitionend', revealed);
+                if (!root.classList.contains('fade-out'))
+                    bar?.classList.remove('no-animations');
+            };
+            root.addEventListener('transitionend', revealed);
+            root.classList.remove('fade-out');
             root.classList.add('fade-in');
+            pageNavigationPending = false;
+            const duration = parseFloat(getComputedStyle(root, '::before').transitionDuration) * 1000 || 0;
+            fallback = setTimeout(revealed, duration + 80);
+            if (!duration)
+                revealed();
         });
     });
 }
@@ -146,6 +166,7 @@ function initializeReloadTransition() {
             return;
 
         rememberReloadState();
+        pageReloadPending = true;
         pageNavigationPending = true;
         await coverPage();
         event.ports[0].postMessage('covered');
@@ -154,7 +175,32 @@ function initializeReloadTransition() {
 
     // Hold the reload response until the outgoing document has faded out.
     const workerURL = new URL('page-transitions.js', siteIndexURL);
-    navigator.serviceWorker.register(workerURL, {updateViaCache: 'none'}).catch(() => {});
+    return new Promise(resolve => {
+        const done = () => {
+            clearTimeout(timeout);
+            navigator.serviceWorker.removeEventListener('controllerchange', controlled);
+            resolve();
+        };
+        const controlled = () => {
+            if (navigator.serviceWorker.controller)
+                done();
+        };
+        const timeout = setTimeout(done, 2000);
+        navigator.serviceWorker.addEventListener('controllerchange', controlled);
+        navigator.serviceWorker.register(workerURL, {updateViaCache: 'none'}).then(controlled).catch(done);
+        controlled();
+    });
+}
+
+async function preparePortrait() {
+    const portrait = document.querySelector('.portrait-image .img');
+    const portraitURL = portrait && getComputedStyle(portrait).backgroundImage
+        .match(/^url\(["']?(.*?)["']?\)$/)?.[1];
+    if (portraitURL) {
+        const image = new Image();
+        image.src = portraitURL;
+        await image.decode().catch(() => {});
+    }
 }
 
 async function prepareReload() {
@@ -173,14 +219,6 @@ async function prepareReload() {
         // The current session state remains available if an older entry is invalid.
     }
 
-    const portrait = document.querySelector('.portrait-image .img');
-    const portraitURL = portrait && getComputedStyle(portrait).backgroundImage
-        .match(/^url\(["']?(.*?)["']?\)$/)?.[1];
-    if (portraitURL) {
-        const image = new Image();
-        image.src = portraitURL;
-        await image.decode().catch(() => {});
-    }
     if (saved) {
         for (const [key, value] of Object.entries(saved)) {
             if (value === null)
@@ -261,7 +299,8 @@ async function navigateWithFade(url, entryKey) {
     if (!entryKey && (pageNavigationPending || destination.href === activePageURL))
         return;
 
-    savePageState();
+    if (!pageNavigationPending)
+        savePageState();
     pageVisit?.abort();
     const visit = new AbortController();
     pageVisit = visit;
@@ -297,14 +336,6 @@ async function navigateWithFade(url, entryKey) {
         activePageKey = entryKey;
         activePageURL = destination.href;
         const saved = pageStates.get(entryKey);
-        if (saved) {
-            for (const [key, value] of Object.entries(saved.storage)) {
-                if (value === null)
-                    sessionStorage.removeItem(key);
-                else
-                    sessionStorage.setItem(key, value);
-            }
-        }
         const metadata = 'title, meta[name="description"], meta[name="robots"], ' +
             'meta[property^="og:"], meta[name^="twitter:"], link[rel="canonical"], script[type="application/ld+json"]';
         document.head.querySelectorAll(metadata).forEach(element => element.remove());
@@ -317,6 +348,19 @@ async function navigateWithFade(url, entryKey) {
         document.documentElement.classList.remove('fade-in', 'refreshed');
         sectionClick = false;
         old_search_length = -1;
+        if (!saved)
+            window.scrollTo({top: 0, behavior: 'instant'});
+        await preparePortrait();
+        if (visit.signal.aborted)
+            return;
+        if (saved) {
+            for (const [key, value] of Object.entries(saved.storage)) {
+                if (value === null)
+                    sessionStorage.removeItem(key);
+                else
+                    sessionStorage.setItem(key, value);
+            }
+        }
         initializePage(Boolean(saved));
         if (!saved && destination.hash) {
             const target = document.getElementById(decodeURIComponent(destination.hash.slice(1)));
@@ -343,7 +387,6 @@ function initializePageNavigation() {
     pageDocuments.set(initialURL.href, document.documentElement.outerHTML);
     document.querySelectorAll('script[src]').forEach(script => loadedPageScripts.add(script.src));
     window.addEventListener('pagehide', rememberReloadState);
-    initializeReloadTransition();
     window.addEventListener('popstate', event => {
         let key = event.state?.sitePageKey;
         if (!key) {
@@ -731,7 +774,6 @@ function restorePageState(restoring) {
 
             setPageTimeout(() => {
                 navLinks.forEach(link => link.classList.remove('no-animations'));
-                progress_bar.classList.remove('no-animations');
                 if (skillItems)
                     skillItems.forEach(item => {
                         item.classList.remove('no-animations');
@@ -849,3 +891,5 @@ function restorePageState(restoring) {
 window.addEventListener('scroll', function () {
     sessionStorage.setItem('scrollPosition', window.scrollY);
 });
+
+const reloadTransitionReady = initializeReloadTransition();

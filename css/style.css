@@ -35,16 +35,9 @@ html::before {
     transition: opacity 0.35s ease-in-out;
 }
 
-html.fade-in::before,
-html.refreshed::before {
+html.fade-in::before {
     opacity: 0;
     pointer-events: none;
-}
-
-html.refresh-preview::before {
-    opacity: 0;
-    pointer-events: auto;
-    transition: none;
 }
 
 html.fade-out::before {
