@@ -608,36 +608,40 @@ function createSearchHitElement({key, title, info, type, link}) {
     a.href = 'javascript:void(0);';
     a.textContent = title;
 
-    a.addEventListener('click', function (e) {
+    a.addEventListener('click', async function (e) {
         e.preventDefault();
+        const searchButton = document.getElementById('btn-search');
+        const searchBar = document.getElementById('searchBar');
         document.getElementById('search-results').classList.remove('visible');
+        searchBar.classList.remove('active', 'active-refreshed');
+        searchButton.classList.remove('active', 'active-refreshed');
+        sessionStorage.setItem('isSearchOpen', 'false');
+        document.getElementById('search-input').blur();
 
-        if (window.location.href === link.split('#')[0]) {
+        await Promise.allSettled(searchBar.getAnimations().map(animation => animation.finished));
+        if (!searchBar.isConnected || pageNavigationPending || pageReloadPending)
+            return;
+
+        if (window.location.href.split('#')[0] === link.split('#')[0]) {
             const targetElement = document.getElementById(link.split('#')[1]);
-            const elementPosition = targetElement.getBoundingClientRect().top + window.scrollY;
-            const offsetPosition = elementPosition - 116;
-
-            const searchButton = document.getElementById('btn-search');
-            const searchBar = document.getElementById('searchBar');
-
-            if (searchBar.classList.contains('active')) {
-                searchBar.classList.remove('active');
-                searchButton.classList.remove('active');
-            }
+            const offsetPosition = targetElement
+                ? targetElement.getBoundingClientRect().top + window.scrollY - 116
+                : 0;
+            const visit = pageVisit;
+            pageNavigationPending = true;
+            await coverPage();
+            if (!searchBar.isConnected || pageReloadPending || visit !== pageVisit)
+                return;
 
             window.scrollTo({
                 top: offsetPosition,
-                behavior: 'smooth'
+                behavior: 'instant'
             });
+            sectionClick = false;
+            if (document.querySelector('#about, #info'))
+                highlightActiveSection();
+            revealPage();
         } else {
-
-            const searchButton = document.getElementById('btn-search');
-            const searchBar = document.getElementById('searchBar');
-
-            if (searchBar.classList.contains('active')) {
-                searchBar.classList.remove('active');
-                searchButton.classList.remove('active');
-            }
 
             const l = link.split('#')[0];
             const p = link.split('#')[1] || '';
