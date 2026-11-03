@@ -119,6 +119,31 @@ function rememberReloadState() {
     }
 }
 
+function initializeReloadTransition() {
+    if (!('serviceWorker' in navigator) || !window.isSecureContext)
+        return;
+
+    navigator.serviceWorker.addEventListener('message', async event => {
+        if (event.source !== navigator.serviceWorker.controller ||
+            event.data?.type !== 'site-reload-cover' || !event.ports[0])
+            return;
+        const current = new URL(window.location.href);
+        current.hash = '';
+        if (event.data.url !== current.href)
+            return;
+
+        rememberReloadState();
+        pageNavigationPending = true;
+        await coverPage();
+        event.ports[0].postMessage('covered');
+        event.ports[0].close();
+    });
+
+    // Hold the reload response until the outgoing document has faded out.
+    const workerURL = new URL('js/page-transitions.js', siteIndexURL);
+    navigator.serviceWorker.register(workerURL, {updateViaCache: 'none'}).catch(() => {});
+}
+
 async function prepareReload() {
     const stored = sessionStorage.getItem(reloadStateKey) || sessionStorage.getItem('site-reload-view');
     sessionStorage.removeItem(reloadStateKey);
@@ -305,6 +330,7 @@ function initializePageNavigation() {
     pageDocuments.set(initialURL.href, document.documentElement.outerHTML);
     document.querySelectorAll('script[src]').forEach(script => loadedPageScripts.add(script.src));
     window.addEventListener('pagehide', rememberReloadState);
+    initializeReloadTransition();
     window.addEventListener('popstate', event => {
         let key = event.state?.sitePageKey;
         if (!key) {
