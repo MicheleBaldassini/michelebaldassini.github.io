@@ -1,4 +1,5 @@
 
+const siteIndexURL = new URL('../index.json', document.currentScript.src).href;
 const theme = localStorage.getItem('theme') || 'light-mode';
 document.documentElement.classList.add(theme);
 let theme_color = '#ffffff';
@@ -16,53 +17,321 @@ metaTag.setAttribute('content', theme_color);
 
 
 let pageNavigationPending = false;
+let pageMap;
+let navType = detectReload();
+let activePageURL = window.location.href;
+let activePageKey;
+let pageVisit;
+const pageStates = new Map();
+const pageDocuments = new Map();
+const pageTimeouts = new Set();
+const pageIntervals = new Set();
+const pageAnimationFrames = new Set();
+const pageAssetLoads = new Map();
+const loadedPageScripts = new Set();
+const pageStorageKeys = ['activeSection', 'scrollPosition', 'isSearchOpen', 'searchInput',
+    'searchResults', 'searchResultsScrollTop', 'isNavbarOpen', 'filter-search',
+    'pubtype', 'pubyear', 'cardtype', 'cardyear'];
+
+function setPageTimeout(callback, delay) {
+    const timer = setTimeout(() => {
+        pageTimeouts.delete(timer);
+        callback();
+    }, delay);
+    pageTimeouts.add(timer);
+    return timer;
+}
+
+function setPageInterval(callback, delay) {
+    const timer = setInterval(callback, delay);
+    pageIntervals.add(timer);
+    return timer;
+}
+
+function requestPageFrame(callback) {
+    const frame = requestAnimationFrame(time => {
+        pageAnimationFrames.delete(frame);
+        callback(time);
+    });
+    pageAnimationFrames.add(frame);
+    return frame;
+}
 
 function revealPage() {
     const root = document.documentElement;
     root.classList.remove('fade-out');
     pageNavigationPending = false;
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => root.classList.add('fade-in'));
+    requestPageFrame(() => {
+        requestPageFrame(() => root.classList.add('fade-in'));
     });
 }
 
-function navigateWithFade(url) {
-    if (pageNavigationPending)
+function coverPage() {
+    const root = document.documentElement;
+    const cover = getComputedStyle(root, '::before');
+    const duration = parseFloat(cover.transitionDuration) * 1000 || 0;
+    if (Number(cover.opacity) === 1) {
+        root.classList.remove('fade-in');
+        root.classList.add('fade-out');
+        return Promise.resolve();
+    }
+    return new Promise(resolve => {
+        let fallback;
+        const done = () => {
+            clearTimeout(fallback);
+            root.removeEventListener('transitionend', onCovered);
+            resolve();
+        };
+        const onCovered = event => {
+            if (event.target === root && event.pseudoElement === '::before' &&
+                event.propertyName === 'opacity')
+                done();
+        };
+        root.addEventListener('transitionend', onCovered);
+        root.classList.remove('fade-in');
+        root.classList.add('fade-out');
+        fallback = setTimeout(done, duration + 80);
+    });
+}
+
+function savePageState() {
+    const storage = Object.fromEntries(pageStorageKeys.map(key => [key, sessionStorage.getItem(key)]));
+    storage.scrollPosition = String(window.scrollY);
+    storage.searchInput = document.getElementById('search-input').value;
+    storage.isNavbarOpen = String(document.getElementById('navbarResponsive').classList.contains('show'));
+    storage.isSearchOpen = String(document.getElementById('searchBar').classList.contains('active'));
+    pageStates.set(activePageKey, {storage});
+}
+
+// A reload creates a new document. Preserve the last view for its outgoing fade.
+const reloadViewKey = 'site-reload-view';
+
+function rememberReloadView() {
+    try {
+        savePageState();
+        const copy = document.body.cloneNode(true);
+        copy.querySelectorAll('script').forEach(script => script.remove());
+        const controls = document.body.querySelectorAll('input, textarea, select');
+        copy.querySelectorAll('input, textarea, select').forEach((control, index) => {
+            const current = controls[index];
+            if (control.tagName === 'SELECT') {
+                Array.from(control.options).forEach((option, i) =>
+                    option.toggleAttribute('selected', current.options[i].selected));
+            } else if (control.tagName === 'TEXTAREA') {
+                control.textContent = current.value;
+            } else {
+                control.setAttribute('value', current.value);
+                control.toggleAttribute('checked', current.checked);
+            }
+        });
+        sessionStorage.setItem(reloadViewKey, JSON.stringify({
+            url: activePageURL,
+            key: activePageKey,
+            width: window.innerWidth,
+            body: copy.outerHTML,
+            storage: pageStates.get(activePageKey).storage
+        }));
+    } catch (error) {
+        sessionStorage.removeItem(reloadViewKey);
+    }
+}
+
+async function replayReloadFade() {
+    const stored = sessionStorage.getItem(reloadViewKey);
+    sessionStorage.removeItem(reloadViewKey);
+    if (performance.getEntriesByType('navigation')[0]?.type !== 'reload' || !stored)
         return;
 
+    let saved;
+    try {
+        saved = JSON.parse(stored);
+    } catch (error) {
+        return;
+    }
+    if (saved.url !== window.location.href || saved.key !== activePageKey ||
+        saved.width !== window.innerWidth)
+        return;
+
+    const freshBody = document.body;
+    const preview = new DOMParser().parseFromString(saved.body, 'text/html').body;
+    preview.inert = true;
+    preview.querySelectorAll('script').forEach(script => script.remove());
+    const root = document.documentElement;
+    document.body.replaceWith(document.importNode(preview, true));
+    root.classList.add('refresh-preview', 'fade-in');
+    window.scrollTo({top: Number(saved.storage.scrollPosition) || 0, behavior: 'instant'});
+    await new Promise(resolve => requestPageFrame(() => requestPageFrame(resolve)));
+    root.classList.remove('refresh-preview');
+    await coverPage();
+    document.body.replaceWith(freshBody);
+    for (const [key, value] of Object.entries(saved.storage)) {
+        if (value === null)
+            sessionStorage.removeItem(key);
+        else
+            sessionStorage.setItem(key, value);
+    }
+}
+
+function disposePage() {
+    pageTimeouts.forEach(clearTimeout);
+    pageIntervals.forEach(clearInterval);
+    pageAnimationFrames.forEach(cancelAnimationFrame);
+    pageTimeouts.clear();
+    pageIntervals.clear();
+    pageAnimationFrames.clear();
+    observer.disconnect();
+    navbarObserver.disconnect();
+    skillsObserver?.disconnect();
+    pageMap?.remove();
+    pageMap = undefined;
+    if (window.Isotope)
+        document.querySelectorAll('.articles, .cards').forEach(element => Isotope.data(element)?.destroy());
+    document.querySelectorAll('.modal, [data-bs-toggle="tooltip"]').forEach(element => {
+        bootstrap.Modal.getInstance(element)?.dispose();
+        bootstrap.Tooltip.getInstance(element)?.dispose();
+    });
+    document.querySelectorAll('.modal-backdrop').forEach(element => element.remove());
+}
+
+async function loadPageAssets(page, url) {
+    const styles = new Set(Array.from(document.querySelectorAll('link[rel="stylesheet"]'), link => link.href));
+    const pendingStyles = [];
+    for (const source of page.querySelectorAll('link[rel="stylesheet"]')) {
+        const href = new URL(source.getAttribute('href'), url).href;
+        if (styles.has(href)) {
+            if (pageAssetLoads.has(href))
+                pendingStyles.push(pageAssetLoads.get(href));
+            continue;
+        }
+        const link = source.cloneNode();
+        link.href = href;
+        const loading = new Promise((resolve, reject) => {
+            link.onload = resolve;
+            link.onerror = reject;
+        });
+        pageAssetLoads.set(href, loading);
+        pendingStyles.push(loading);
+        document.head.appendChild(link);
+        styles.add(href);
+    }
+    for (const source of page.querySelectorAll('script[src]')) {
+        const src = new URL(source.getAttribute('src'), url).href;
+        if (!new URL(src).pathname.includes('/js/assets/') || loadedPageScripts.has(src))
+            continue;
+        if (!pageAssetLoads.has(src)) {
+            pageAssetLoads.set(src, new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            }));
+        }
+        await pageAssetLoads.get(src);
+        loadedPageScripts.add(src);
+    }
+    await Promise.all(pendingStyles);
+}
+
+async function navigateWithFade(url, entryKey) {
     const destination = new URL(url, window.location.href);
     if (destination.origin !== window.location.origin) {
         window.location.assign(destination.href);
         return;
     }
+    if (!entryKey && (pageNavigationPending || destination.href === activePageURL))
+        return;
 
+    savePageState();
+    pageVisit?.abort();
+    const visit = new AbortController();
+    pageVisit = visit;
     pageNavigationPending = true;
-    const root = document.documentElement;
-    const cover = window.getComputedStyle(root, '::before');
-    const duration = parseFloat(cover.transitionDuration) * 1000 || 0;
-    let fallback;
-    let navigated = false;
+    const pageURL = new URL(destination.href);
+    pageURL.hash = '';
 
-    const navigate = () => {
-        if (navigated)
+    try {
+        const content = pageDocuments.has(pageURL.href)
+            ? Promise.resolve(pageDocuments.get(pageURL.href))
+            : fetch(pageURL.href, {signal: visit.signal}).then(response => {
+                if (!response.ok || new URL(response.url).origin !== destination.origin)
+                    throw new Error('Page unavailable');
+                return response.text();
+            });
+        const [html] = await Promise.all([content, coverPage()]);
+        if (visit.signal.aborted)
             return;
-        navigated = true;
-        clearTimeout(fallback);
-        root.removeEventListener('transitionend', onCovered);
-        document.getElementById('search-results').replaceChildren();
-        sessionStorage.setItem('searchInput', '');
-        window.location.assign(destination.href);
-    };
-    const onCovered = (event) => {
-        if (event.target === root && event.pseudoElement === '::before' &&
-            event.propertyName === 'opacity')
-            navigate();
-    };
+        const page = new DOMParser().parseFromString(html, 'text/html');
+        if (!Array.from(page.querySelectorAll('script[src]')).some(script =>
+            new URL(script.getAttribute('src'), destination.href).pathname.endsWith('/js/main.js')))
+            throw new Error('Use browser navigation for this document');
+        await loadPageAssets(page, destination.href);
+        if (visit.signal.aborted)
+            return;
+        pageDocuments.set(pageURL.href, html);
+        disposePage();
 
-    root.addEventListener('transitionend', onCovered);
-    root.classList.remove('fade-in');
-    root.classList.add('fade-out');
-    fallback = setTimeout(navigate, duration + 80);
+        if (!entryKey) {
+            entryKey = Date.now() + '-' + Math.random().toString(36).slice(2);
+            history.pushState({sitePageKey: entryKey}, '', destination.href);
+        }
+        activePageKey = entryKey;
+        activePageURL = destination.href;
+        const saved = pageStates.get(entryKey);
+        if (saved) {
+            for (const [key, value] of Object.entries(saved.storage)) {
+                if (value === null)
+                    sessionStorage.removeItem(key);
+                else
+                    sessionStorage.setItem(key, value);
+            }
+        }
+        const metadata = 'title, meta[name="description"], meta[name="robots"], ' +
+            'meta[property^="og:"], meta[name^="twitter:"], link[rel="canonical"], script[type="application/ld+json"]';
+        document.head.querySelectorAll(metadata).forEach(element => element.remove());
+        page.head.querySelectorAll(metadata).forEach(element => document.head.appendChild(document.importNode(element, true)));
+        page.body.querySelectorAll('script').forEach(script => script.remove());
+        document.body.replaceWith(document.importNode(page.body, true));
+        document.body.setAttribute('tabindex', '-1');
+        document.body.focus({preventScroll: true});
+        document.body.removeAttribute('tabindex');
+        document.documentElement.classList.remove('fade-in', 'refreshed');
+        sectionClick = false;
+        old_search_length = -1;
+        initializePage(Boolean(saved));
+        if (!saved && destination.hash) {
+            const target = document.getElementById(decodeURIComponent(destination.hash.slice(1)));
+            if (target)
+                window.scrollTo({top: target.getBoundingClientRect().top + window.scrollY - 112, behavior: 'instant'});
+        }
+    } catch (error) {
+        if (!visit.signal.aborted) {
+            // Keep ordinary browser navigation available if fetching or parsing fails.
+            if (entryKey)
+                window.location.replace(destination.href);
+            else
+                window.location.assign(destination.href);
+        }
+    }
+}
+
+function initializePageNavigation() {
+    document.head.querySelectorAll('link[href]').forEach(link => link.href = link.href);
+    activePageKey = history.state?.sitePageKey || Date.now() + '-' + Math.random().toString(36).slice(2);
+    history.replaceState({...history.state, sitePageKey: activePageKey}, '', window.location.href);
+    const initialURL = new URL(window.location.href);
+    initialURL.hash = '';
+    pageDocuments.set(initialURL.href, document.documentElement.outerHTML);
+    document.querySelectorAll('script[src]').forEach(script => loadedPageScripts.add(script.src));
+    window.addEventListener('pagehide', rememberReloadView);
+    window.addEventListener('popstate', event => {
+        let key = event.state?.sitePageKey;
+        if (!key) {
+            key = Date.now() + '-' + Math.random().toString(36).slice(2);
+            history.replaceState({...event.state, sitePageKey: key}, '', window.location.href);
+        }
+        navigateWithFade(window.location.href, key);
+    });
 }
 
 
@@ -106,6 +375,7 @@ function progressBar() {
 
 function showMap() {
     const map = L.map('map', {keepBuffer: 10}).setView([43.721020, 10.389863], 15);
+    pageMap = map;
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         minZoom: 14,
@@ -134,7 +404,7 @@ function hasConsent() {
 
 function initIsotope() {
     const savedSearch = sessionStorage.getItem('filter-search');
-    if (savedSearch)
+    if (savedSearch && document.querySelector('.filter-search'))
         document.querySelector('.filter-search').value = savedSearch;
 
     Array.from(document.getElementsByClassName('pub-filters')).forEach(element => {
@@ -344,221 +614,215 @@ const observer = new IntersectionObserver((entries) => {
 const COOKIE_KEY = 'cookies';
 
 
-if (window.location.href.includes('publications') ||
-    window.location.href.includes('talks_and_awards')) {
-    if ('scrollRestoration' in history)
-        history.scrollRestoration = 'auto';
-} else {
+function restorePageState(restoring) {
+    navType = restoring;
     if ('scrollRestoration' in history)
         history.scrollRestoration = 'manual';
-}
 
+    if (navType == true) {
+        const savedScroll = sessionStorage.getItem('scrollPosition');
 
-navType = detectReload();
+        requestPageFrame(() => {
+            initIsotope();
+            window.scrollTo({top: savedScroll, behavior: 'instant'});
 
-// sessionStorage.setItem('firstClick', 'true');
+            document.querySelectorAll('.fade-up').forEach(el => {
+                const rect = el.getBoundingClientRect();
+                const elBottom = rect.bottom;
+                const viewportBottom = window.innerHeight + ((rect.bottom - rect.top) * 0.8);
 
-if (navType == true) {
-    const savedScroll = sessionStorage.getItem('scrollPosition');
-
-    requestAnimationFrame(() => {
-        initIsotope();
-        window.scrollTo({top: savedScroll, behavior: 'instant'});
-
-        document.querySelectorAll('.fade-up').forEach(el => {
-            const rect = el.getBoundingClientRect();
-            const elBottom = rect.bottom;
-            const viewportBottom = window.innerHeight + ((rect.bottom - rect.top) * 0.8);
-
-            if (elBottom < viewportBottom) {
-                el.classList.add('visible-refresh');
-            } else
-                observer.observe(el);
-        });
-
-        const navbarCollapse = document.getElementById('navbarResponsive');
-        const navbarToggler = document.getElementsByClassName('navbar-toggler')[0];
-        const isNavbarOpen = sessionStorage.getItem('isNavbarOpen') === 'true';
-        if (isNavbarOpen) {
-            navbarCollapse.classList.add('active-refreshed');
-            navbarToggler.classList.remove('collapsed');
-            navbarCollapse.classList.add('show');
-            document.querySelectorAll('.navbar').forEach(navbar => {
-                navbar.classList.add('navbar-show');
+                if (elBottom < viewportBottom) {
+                    el.classList.add('visible-refresh');
+                } else
+                    observer.observe(el);
             });
-        }
 
-        const searchInput = sessionStorage.getItem('searchInput');
-        document.getElementById('search-input').value = searchInput;
-
-        document.getElementById('search-input').addEventListener('focus', () => {
-            const val = document.getElementById('search-input').value;
-            document.getElementById('search-input').setSelectionRange(val.length, val.length);
-        });
-
-        const searchButton = document.getElementById('btn-search');
-        const searchBar = document.getElementById('searchBar');
-        const isSearchOpen = sessionStorage.getItem('isSearchOpen') === 'true';
-        if (isSearchOpen) {
-            searchButton.classList.add('active-refreshed');
-            searchBar.classList.add('active-refreshed');
-            document.getElementById('search-input').focus();
-            document.getElementById('search-input').click();
-            if ('virtualKeyboard' in navigator) {
-                navigator.virtualKeyboard.show();
+            const navbarCollapse = document.getElementById('navbarResponsive');
+            const navbarToggler = document.getElementsByClassName('navbar-toggler')[0];
+            const isNavbarOpen = sessionStorage.getItem('isNavbarOpen') === 'true';
+            if (isNavbarOpen) {
+                navbarCollapse.classList.add('active-refreshed');
+                navbarToggler.classList.remove('collapsed');
+                navbarCollapse.classList.add('show');
+                document.querySelectorAll('.navbar').forEach(navbar => {
+                    navbar.classList.add('navbar-show');
+                });
             }
-        }
 
-        squeezeNavbar();
+            const searchInput = sessionStorage.getItem('searchInput');
+            document.getElementById('search-input').value = searchInput;
 
-        if (!window.location.href.includes('publications') &&
-            !window.location.href.includes('teaching') &
-            !window.location.href.includes('talks_and_awards') &
-            !window.location.href.includes('experience'))
-            showMap();
+            document.getElementById('search-input').addEventListener('focus', () => {
+                const val = document.getElementById('search-input').value;
+                document.getElementById('search-input').setSelectionRange(val.length, val.length);
+            });
 
-        const navLinks = document.querySelectorAll('.nav-link');
-        const progress_bar = document.querySelector('.progress-bar');
-        const skillItems = document.querySelectorAll('.skill-item');
+            const searchButton = document.getElementById('btn-search');
+            const searchBar = document.getElementById('searchBar');
+            const isSearchOpen = sessionStorage.getItem('isSearchOpen') === 'true';
+            if (isSearchOpen) {
+                searchButton.classList.add('active-refreshed');
+                searchBar.classList.add('active-refreshed');
+                document.getElementById('search-input').focus();
+                document.getElementById('search-input').click();
+                if ('virtualKeyboard' in navigator) {
+                    navigator.virtualKeyboard.show();
+                }
+            }
 
-        navLinks.forEach(link => link.classList.add('no-animations'));
+            squeezeNavbar();
 
-        progress_bar.classList.add('no-animations');
-        progressBar();
+            if (!window.location.href.includes('publications') &&
+                !window.location.href.includes('teaching') &
+                !window.location.href.includes('talks_and_awards') &
+                !window.location.href.includes('experience'))
+                showMap();
 
-        if (skillItems) {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const progress_bar = document.querySelector('.progress-bar');
+            const skillItems = document.querySelectorAll('.skill-item');
+
+            navLinks.forEach(link => link.classList.add('no-animations'));
+
+            progress_bar.classList.add('no-animations');
+            progressBar();
+
+            if (skillItems) {
          
-            skillItems.forEach(item => {
-                item.classList.add('no-animations');
-
-                const circle = item.querySelector('.progress');
-                const percent = parseInt(item.getAttribute('data-percent'));
-                const percentText = item.querySelector('.skill-percent');
-
-                if (circle) {
-                    const radius = circle.r.baseVal.value;
-                    const circumference = radius * 2 * Math.PI;
-                    const offset = circumference - (percent / 100) * circumference;
-
-                    circle.style.transition = 'none';
-                    circle.style.strokeDasharray = circumference;
-                    circle.style.strokeDashoffset = offset;
-                }
-                percentText.textContent = percent + '%';
-            });
-        }
-
-        setTimeout(() => {
-            navLinks.forEach(link => link.classList.remove('no-animations'));
-            progress_bar.classList.remove('no-animations');
-            if (skillItems)
                 skillItems.forEach(item => {
-                    item.classList.remove('no-animations');
+                    item.classList.add('no-animations');
+
                     const circle = item.querySelector('.progress');
-                    circle.style.transition = '';
-                });
-        }, 100);
+                    const percent = parseInt(item.getAttribute('data-percent'));
+                    const percentText = item.querySelector('.skill-percent');
 
-        const activeSection = sessionStorage.getItem('activeSection');
-            if (activeSection !== null && activeSection !== '') {
-                const targetLink = Array.from(navLinks).find(link =>
-                    link.classList.contains(`${activeSection}-link`)
-                );
-                if (targetLink)
-                    targetLink.parentElement.classList.add('active');
-            }
+                    if (circle) {
+                        const radius = circle.r.baseVal.value;
+                        const circumference = radius * 2 * Math.PI;
+                        const offset = circumference - (percent / 100) * circumference;
 
-        const banner = document.querySelector('.cookie-window');
-        if (!hasConsent())
-            banner.classList.remove('hidden');
-        else {
-            banner.classList.add('hidden');
-            banner.addEventListener('transitionend', () => {
-                banner.style.display = 'none';
-            }, { once: true });
-        }
-
-        const savedResults = sessionStorage.getItem('searchResults');
-
-        if (searchInput) {
-            const searchHitsContainer = document.getElementById('search-results');
-            const resultsArray = JSON.parse(savedResults);
-
-            const headerContainer = document.createElement('div');
-            headerContainer.className = 'search-hit-header';
-
-            headerContainer.textContent =
-                resultsArray.length > 0
-                    ? `${resultsArray.length} results found`
-                    : `No results found`;
-
-            searchHitsContainer.append(headerContainer);
-
-            if (savedResults) {
-                resultsArray.forEach((item, index) => {
-                    const searchHitElement = createSearchHitElement({
-                        key: index,
-                        title: item.title,
-                        info: item.info,
-                        type: item.type,
-                        link: item.link
-                    });
-                    searchHitsContainer.appendChild(searchHitElement);
+                        circle.style.transition = 'none';
+                        circle.style.strokeDasharray = circumference;
+                        circle.style.strokeDashoffset = offset;
+                    }
+                    percentText.textContent = percent + '%';
                 });
             }
 
-            if (resultsArray.length > 0 || searchHitsContainer.textContent == `No results found`) {
-                headerContainer.classList.add('refreshed');
-            }
-
-            if (resultsArray.length > 0) {
-                const savedScroll = sessionStorage.getItem('searchResultsScrollTop');
-                if (savedScroll) {
-                    searchHitsContainer.scrollTop = savedScroll;
-                    searchHitsContainer.classList.add('refreshed');
-                    document.querySelectorAll('.search-hit').forEach(el => {
-                        el.classList.add('refreshed');
+            setPageTimeout(() => {
+                navLinks.forEach(link => link.classList.remove('no-animations'));
+                progress_bar.classList.remove('no-animations');
+                if (skillItems)
+                    skillItems.forEach(item => {
+                        item.classList.remove('no-animations');
+                        const circle = item.querySelector('.progress');
+                        circle.style.transition = '';
                     });
-                } else {
-                    searchHitsContainer.classList.add('refreshed');
-                    document.querySelectorAll('.search-hit').forEach(el => {
-                        el.classList.add('refreshed');
-                    });
-                }
+            }, 100);
 
-                function saveScrollPosition() {
-                    sessionStorage.setItem(
-                        'searchResultsScrollTop',
-                        searchHitsContainer.scrollTop
+            const activeSection = sessionStorage.getItem('activeSection');
+                if (activeSection !== null && activeSection !== '') {
+                    const targetLink = Array.from(navLinks).find(link =>
+                        link.classList.contains(`${activeSection}-link`)
                     );
+                    if (targetLink)
+                        targetLink.parentElement.classList.add('active');
                 }
-                searchHitsContainer.removeEventListener('scroll', saveScrollPosition);
-                searchHitsContainer.addEventListener('scroll', saveScrollPosition);
-            } else
-                searchHitsContainer.classList.add('refreshed');
+
+            const banner = document.querySelector('.cookie-window');
+            if (!hasConsent())
+                banner.classList.remove('hidden');
+            else {
+                banner.classList.add('hidden');
+                banner.addEventListener('transitionend', () => {
+                    banner.style.display = 'none';
+                }, { once: true });
+            }
+
+            const savedResults = sessionStorage.getItem('searchResults');
+
+            if (searchInput) {
+                const searchHitsContainer = document.getElementById('search-results');
+                const resultsArray = JSON.parse(savedResults || '[]');
+
+                const headerContainer = document.createElement('div');
+                headerContainer.className = 'search-hit-header';
+
+                headerContainer.textContent =
+                    resultsArray.length > 0
+                        ? `${resultsArray.length} results found`
+                        : `No results found`;
+
+                searchHitsContainer.append(headerContainer);
+
+                if (savedResults) {
+                    resultsArray.forEach((item, index) => {
+                        const searchHitElement = createSearchHitElement({
+                            key: index,
+                            title: item.title,
+                            info: item.info,
+                            type: item.type,
+                            link: item.link
+                        });
+                        searchHitsContainer.appendChild(searchHitElement);
+                    });
+                }
+
+                if (resultsArray.length > 0 || searchHitsContainer.textContent == `No results found`) {
+                    headerContainer.classList.add('refreshed');
+                }
+
+                if (resultsArray.length > 0) {
+                    const savedScroll = sessionStorage.getItem('searchResultsScrollTop');
+                    if (savedScroll) {
+                        searchHitsContainer.scrollTop = savedScroll;
+                        searchHitsContainer.classList.add('refreshed');
+                        document.querySelectorAll('.search-hit').forEach(el => {
+                            el.classList.add('refreshed');
+                        });
+                    } else {
+                        searchHitsContainer.classList.add('refreshed');
+                        document.querySelectorAll('.search-hit').forEach(el => {
+                            el.classList.add('refreshed');
+                        });
+                    }
+
+                    function saveScrollPosition() {
+                        sessionStorage.setItem(
+                            'searchResultsScrollTop',
+                            searchHitsContainer.scrollTop
+                        );
+                    }
+                    searchHitsContainer.removeEventListener('scroll', saveScrollPosition);
+                    searchHitsContainer.addEventListener('scroll', saveScrollPosition);
+                } else
+                    searchHitsContainer.classList.add('refreshed');
+            }
+
+            document.documentElement.classList.add('refreshed');
+        });
+    } else {
+        sessionStorage.removeItem('activeSection');
+        sessionStorage.removeItem('scrollPosition');
+        sessionStorage.removeItem('isSearchOpen');
+        sessionStorage.removeItem('searchInput');
+        sessionStorage.removeItem('searchResults');
+        sessionStorage.removeItem('isNavbarOpen');
+        // sessionStorage.removeItem('firstClick');
+
+        if (window.location.href.includes('publications')) {
+            sessionStorage.removeItem('filter-search');
+            sessionStorage.removeItem('pubtype');
+            sessionStorage.removeItem('pubyear');
         }
-
-        document.documentElement.classList.add('refreshed');
-    });
-} else {
-    sessionStorage.removeItem('activeSection');
-    sessionStorage.removeItem('scrollPosition');
-    sessionStorage.removeItem('isSearchOpen');
-    sessionStorage.removeItem('searchInput');
-    sessionStorage.removeItem('searchResults');
-    sessionStorage.removeItem('isNavbarOpen');
-    // sessionStorage.removeItem('firstClick');
-
-    if (window.location.href.includes('publications')) {
-        sessionStorage.removeItem('filter-search');
-        sessionStorage.removeItem('pubtype');
-        sessionStorage.removeItem('pubyear');
-    }
     
-    if (window.location.href.includes('talks_and_awards')) {
-        sessionStorage.removeItem('cardtype');
-        sessionStorage.removeItem('cardyear');
+        if (window.location.href.includes('talks_and_awards')) {
+            sessionStorage.removeItem('cardtype');
+            sessionStorage.removeItem('cardyear');
+        }
     }
+
+
 }
 
 

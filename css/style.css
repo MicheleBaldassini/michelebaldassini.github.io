@@ -41,6 +41,12 @@ html.refreshed::before {
     pointer-events: none;
 }
 
+html.refresh-preview::before {
+    opacity: 0;
+    pointer-events: auto;
+    transition: none;
+}
+
 html.fade-out::before {
     opacity: 1;
     pointer-events: auto;

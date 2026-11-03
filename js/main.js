@@ -143,7 +143,7 @@ function toggleSearch() {
             if (searchResults.children.length > 0) {
                 searchResults.classList.add('visible');
 
-                setTimeout(() => {
+                setPageTimeout(() => {
                     document.querySelectorAll('.search-hit').forEach(el => {
                         el.classList.add('visible');
                     });
@@ -151,7 +151,7 @@ function toggleSearch() {
             }
 
             if (!isNavbarOpen)
-                setTimeout(() => {
+                setPageTimeout(() => {
                     document.getElementById('search-input').focus();
                 }, 400);
 
@@ -197,7 +197,7 @@ function collapseNavbar(event) {
                 timeout = 1200;
             */
 
-            setTimeout(() => {
+            setPageTimeout(() => {
                 document.getElementById('search-input').focus();
             }, 400);
         };
@@ -219,7 +219,7 @@ function collapseNavbar(event) {
         sessionStorage.setItem('isNavbarOpen', false);
     }
 
-    setTimeout(() => {
+    setPageTimeout(() => {
         const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
         dropdownToggles.forEach(toggle => {
             const arrow = toggle.querySelector('.dropdown-arrow');
@@ -319,11 +319,11 @@ function sectionNavigation() {
                 document.getElementsByClassName('navbar-toggler')[0].click();
             }
     
-            setTimeout(() => {
+            setPageTimeout(() => {
                 document.getElementById('search-results').replaceChildren();
                 sessionStorage.setItem('searchInput', '');
 
-                setTimeout(() => {
+                setPageTimeout(() => {
                     const targetId = sectionClass.replace('-link', '');
                     if (targetId === 'about' || targetId === 'info') {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -342,7 +342,7 @@ function sectionNavigation() {
                         }
                     }
                     sessionStorage.setItem('activeSection', targetId);
-                    setTimeout(() => sectionClick = false, 800);
+                    setPageTimeout(() => sectionClick = false, 800);
                 }, 50);
             }, 500);
         });
@@ -423,9 +423,9 @@ function loopArrowDown() {
     arrow.style.transition = 'top 0.8s';
     const animate = () => {
         arrow.style.top = `${currentTop}px`;
-        setTimeout(() => {
+        setPageTimeout(() => {
             arrow.style.top = `${currentTop + 10}px`;
-            setTimeout(animate, 800);
+            setPageTimeout(animate, 800);
         }, 800);
     };
     animate();
@@ -437,9 +437,9 @@ function loopToTop() {
     arrow.style.transition = 'bottom 0.8s';
     const animate = () => {
         arrow.style.bottom = `${currentBottom}px`;
-        setTimeout(() => {
+        setPageTimeout(() => {
             arrow.style.bottom = `${currentBottom + 10}px`;
-            setTimeout(animate, 800);
+            setPageTimeout(animate, 800);
         }, 800);
     };
     animate();
@@ -456,6 +456,8 @@ function scrollToTop() {
 }
 
 
+let skillsObserver;
+
 function toggleSkills() {
     const skills = document.querySelectorAll('.skill-item');
     const animateSkill = (skill) => {
@@ -467,7 +469,7 @@ function toggleSkills() {
         const offset = circumference - (percent / 100) * circumference;
         circle.style.strokeDashoffset = offset;
         let count = 0;
-        const timer = setInterval(() => {
+        const timer = setPageInterval(() => {
             if (count >= percent) {
                 clearInterval(timer);
             } else {
@@ -476,16 +478,16 @@ function toggleSkills() {
             }
         }, 15);
     };
-    const observer = new IntersectionObserver((entries) => {
+    skillsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('show');
                 animateSkill(entry.target);
-                observer.unobserve(entry.target);
+                skillsObserver.unobserve(entry.target);
             }
         });
     }, { threshold: 0.5 });
-    skills.forEach(skill => observer.observe(skill));
+    skills.forEach(skill => skillsObserver.observe(skill));
 }
 
 
@@ -518,7 +520,7 @@ function toggleBibEntry() {
         navigator.clipboard.writeText(bibEntryText)
             .then(() => {
                 tooltip.show();
-                setTimeout(() => {
+                setPageTimeout(() => {
                     tooltip.hide();
                 }, 1000);
             });
@@ -585,15 +587,15 @@ function startSearch(force, fuseInstance) {
     searchHits.classList.remove('visible');
     
     if (query.length < 1)
-        setTimeout(() => {
+        setPageTimeout(() => {
             document.querySelectorAll('.search-hit').forEach(el => {
                 el.classList.remove('visible');
             });
         }, 500);
 
-    setTimeout(() => {
+    setPageTimeout(() => {
         if (query.length < 1)
-            setTimeout(() => {
+            setPageTimeout(() => {
                 searchHits.replaceChildren();
             }, 500);
 
@@ -662,7 +664,7 @@ function parseResults(query, results) {
         sessionStorage.removeItem('searchResultsScrollTop');
     }
 
-    setTimeout(() => {
+    setPageTimeout(() => {
         document.querySelectorAll('.search-hit').forEach(el => {
             el.style.transitionDelay = '';
             el.classList.add('visible');
@@ -679,12 +681,14 @@ function parseResults(query, results) {
 
 
 async function initSearch(indexURI) {
+    const searchInput = document.getElementById('search-input');
     try {
         const response = await fetch(indexURI);
         const data = await response.json();
         const fuseInstance = new Fuse(data, fuseOptions);
 
-        const searchInput = document.getElementById('search-input');
+        if (!searchInput.isConnected)
+            return;
 
         const searchBar   = document.getElementById('searchBar');
 
@@ -692,7 +696,7 @@ async function initSearch(indexURI) {
             if (e.relatedTarget === searchInput)
                 return;
 
-            setTimeout(() => {
+            setPageTimeout(() => {
                 if (document.activeElement !== searchInput &&
                     searchBar.classList.contains('active')) {
                     const searchResults = document.getElementById('search-results');
@@ -713,7 +717,7 @@ async function initSearch(indexURI) {
         const scheduleSearch = (force, el) => {
             clearTimeout(el.searchTimer);
             sessionStorage.setItem('searchInput', el.value);
-            el.searchTimer = setTimeout(() => startSearch(force, fuseInstance), 375);
+            el.searchTimer = setPageTimeout(() => startSearch(force, fuseInstance), 375);
         };
 
         searchInput.addEventListener('keyup', (event) => {
@@ -727,14 +731,14 @@ async function initSearch(indexURI) {
 
         searchInput.addEventListener('input', () => {
             scheduleSearch(false, event.target);
-            setTimeout(() => {
+            setPageTimeout(() => {
                 const val = searchInput.value;
                 searchInput.setSelectionRange(val.length, val.length);
             }, 0);
         });
 
         searchInput.addEventListener('mousedown', (event) => {
-            setTimeout(() => {
+            setPageTimeout(() => {
                 const val = searchInput.value;
                 searchInput.setSelectionRange(val.length, val.length);
             }, 0);
@@ -742,7 +746,7 @@ async function initSearch(indexURI) {
 
 
         searchInput.addEventListener('touchend', () => {
-            setTimeout(() => {
+            setPageTimeout(() => {
                 const val = searchInput.value;
                 searchInput.setSelectionRange(val.length, val.length);
             }, 0);
@@ -756,7 +760,7 @@ async function initSearch(indexURI) {
                 if (event.key === 'Enter') {
                     startSearch(true, fuseInstance);
                 } else {
-                    event.target.searchTimer = setTimeout(() => {
+                    event.target.searchTimer = setPageTimeout(() => {
                         startSearch(false, fuseInstance);
                     }, 250);
                 }
@@ -770,7 +774,7 @@ async function initSearch(indexURI) {
                 if (event.key === 'Enter') {
                     startSearch(true, fuseInstance);
                 } else {
-                    event.target.searchTimer = setTimeout(() => {
+                    event.target.searchTimer = setPageTimeout(() => {
                         startSearch(false, fuseInstance);
                     }, 250);
                 }
@@ -819,7 +823,8 @@ var sectionClick = false;
 const COOKIE_DURATION_DAYS = 365;
 
 
-document.addEventListener('DOMContentLoaded', function () {
+function initializePage(restoring = detectReload()) {
+    restorePageState(restoring);
     const banner = document.querySelector('.cookie-window');
     const btn = document.querySelector('.cookie-btn');
 
@@ -846,7 +851,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const val = document.getElementById('search-input').value;
             document.getElementById('search-input').setSelectionRange(val.length, val.length);
         });
-        setTimeout(() => {
+        setPageTimeout(() => {
             const searchButton = document.getElementById('btn-search');
             const searchBar = document.getElementById('searchBar');
 
@@ -856,7 +861,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 sessionStorage.setItem('isSearchOpen', searchBar.classList.contains('active'));
 
-                setTimeout(() => {
+                setPageTimeout(() => {
                     searchButton.classList.remove('active-refreshed');
                     searchBar.classList.remove('active-refreshed');
                 }, 10);
@@ -868,12 +873,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 sessionStorage.setItem('isNavbarOpen', navBar.classList.contains('show'));
 
-                setTimeout(() => {
+                setPageTimeout(() => {
                     navBar.classList.remove('active-refreshed');
                 }, 10);
             }
 
-            setTimeout(() => {
+            setPageTimeout(() => {
                 const searchResults = document.getElementById('search-results');
                 const searchHitHeader = document.querySelector('.search-hit-header');
                 const searchHit = document.querySelectorAll('.search-hit');
@@ -905,23 +910,6 @@ document.addEventListener('DOMContentLoaded', function () {
     scrollToTop();
     loopToTop();
 
-    document.addEventListener('click', function (event) {
-        collapseSearch(event);
-        collapseNavbar(event);
-    });
-
-
-    window.addEventListener('scroll', function () {
-        squeezeNavbar();
-        progressBar();
-
-        if (!window.location.href.includes('publications') &&
-            !window.location.href.includes('talks_and_awards') && 
-            !window.location.href.includes('experience') && 
-            !window.location.href.match(/teaching\/?$/))
-            highlightActiveSection();
-    });
-
     if (navType == false) {
         if (window.location.href.includes('publications') ||
             window.location.href.includes('talks_and_awards'))
@@ -952,16 +940,7 @@ document.addEventListener('DOMContentLoaded', function () {
         loopArrowDown();
     }
 
-    let indexURI = 'index.json';
-    if (window.location.href.includes('publications') ||
-        window.location.href.includes('talks_and_awards') || 
-        window.location.href.includes('experience') ||
-        window.location.href.match(/teaching\/?$/))
-        indexURI = '../' + indexURI;
-    if (window.location.href.includes('teaching'))
-        indexURI = '../../' + indexURI;
-    
-    initSearch(indexURI);
+    initSearch(siteIndexURL);
 
     const p = sessionStorage.getItem('scrollTo');
     if (p !== null && p !== '') {
@@ -1025,7 +1004,35 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     revealPage();
+}
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+    initializePageNavigation();
+    await replayReloadFade();
+    initializePage();
 });
+
+document.addEventListener('click', function (event) {
+    collapseSearch(event);
+    collapseNavbar(event);
+});
+
+
+window.addEventListener('scroll', function () {
+    if (pageNavigationPending)
+        return;
+    squeezeNavbar();
+    progressBar();
+
+    if (!window.location.href.includes('publications') &&
+        !window.location.href.includes('talks_and_awards') && 
+        !window.location.href.includes('experience') && 
+        !window.location.href.match(/teaching\/?$/))
+        highlightActiveSection();
+});
+
+
 
 
 // Keep the cover in place while leaving; reveal cached pages when returning.
