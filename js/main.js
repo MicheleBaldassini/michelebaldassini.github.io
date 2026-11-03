@@ -943,8 +943,9 @@ function initializePage(restoring = detectReload()) {
     initSearch(siteIndexURL);
 
     const p = sessionStorage.getItem('scrollTo');
-    if (p !== null && p !== '') {
-        const targetElement = document.getElementById(p);
+    sessionStorage.removeItem('scrollTo');
+    const targetElement = p ? document.getElementById(p) : null;
+    if (targetElement) {
         const elementPosition = targetElement.getBoundingClientRect().top;
         const offsetPosition = elementPosition - 112;
 
@@ -952,7 +953,6 @@ function initializePage(restoring = detectReload()) {
             top: offsetPosition,
             behavior: 'instant'
         });
-        sessionStorage.removeItem('scrollTo');
 
         document.querySelectorAll('.fade-up').forEach(el => {
 
