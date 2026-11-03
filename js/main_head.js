@@ -59,15 +59,28 @@ function requestPageFrame(callback) {
 
 function revealPage() {
     const root = document.documentElement;
+    const bar = document.getElementById('myBar');
+    bar?.classList.add('no-animations');
     root.classList.remove('fade-out');
     pageNavigationPending = false;
     requestPageFrame(() => {
-        requestPageFrame(() => root.classList.add('fade-in'));
+        if (bar)
+            progressBar();
+        requestPageFrame(() => {
+            bar?.classList.remove('no-animations');
+            root.classList.add('fade-in');
+        });
     });
 }
 
 function coverPage() {
     const root = document.documentElement;
+    const bar = document.getElementById('myBar');
+    if (bar) {
+        // Freeze an in-progress scroll animation before fading the page out.
+        bar.style.width = getComputedStyle(bar).width;
+        bar.classList.add('no-animations');
+    }
     const cover = getComputedStyle(root, '::before');
     const duration = parseFloat(cover.transitionDuration) * 1000 || 0;
     if (Number(cover.opacity) === 1) {
