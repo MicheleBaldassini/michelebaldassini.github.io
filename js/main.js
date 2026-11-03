@@ -1009,7 +1009,7 @@ function initializePage(restoring = detectReload()) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     initializePageNavigation();
-    await replayReloadFade();
+    await prepareReload();
     initializePage();
 });
 
