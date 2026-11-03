@@ -103,84 +103,53 @@ function savePageState() {
     pageStates.set(activePageKey, {storage});
 }
 
-// A reload creates a new document. Preserve the last view for its outgoing fade.
-const reloadViewKey = 'site-reload-view';
+// Restore reload state behind the cover, then reveal the real document once.
+const reloadStateKey = 'site-reload-state';
 
-function rememberReloadView() {
+function rememberReloadState() {
     try {
         savePageState();
-        const copy = document.body.cloneNode(true);
-        copy.querySelectorAll('script').forEach(script => script.remove());
-        const controls = document.body.querySelectorAll('input, textarea, select');
-        copy.querySelectorAll('input, textarea, select').forEach((control, index) => {
-            const current = controls[index];
-            if (control.tagName === 'SELECT') {
-                Array.from(control.options).forEach((option, i) =>
-                    option.toggleAttribute('selected', current.options[i].selected));
-            } else if (control.tagName === 'TEXTAREA') {
-                control.textContent = current.value;
-            } else {
-                control.setAttribute('value', current.value);
-                control.toggleAttribute('checked', current.checked);
-            }
-        });
-        sessionStorage.setItem(reloadViewKey, JSON.stringify({
+        sessionStorage.setItem(reloadStateKey, JSON.stringify({
             url: activePageURL,
             key: activePageKey,
-            width: window.innerWidth,
-            body: copy.outerHTML,
             storage: pageStates.get(activePageKey).storage
         }));
     } catch (error) {
-        sessionStorage.removeItem(reloadViewKey);
+        sessionStorage.removeItem(reloadStateKey);
     }
 }
 
-async function replayReloadFade() {
-    const stored = sessionStorage.getItem(reloadViewKey);
-    sessionStorage.removeItem(reloadViewKey);
-    if (performance.getEntriesByType('navigation')[0]?.type !== 'reload' || !stored)
+async function prepareReload() {
+    const stored = sessionStorage.getItem(reloadStateKey) || sessionStorage.getItem('site-reload-view');
+    sessionStorage.removeItem(reloadStateKey);
+    sessionStorage.removeItem('site-reload-view');
+    if (performance.getEntriesByType('navigation')[0]?.type !== 'reload')
         return;
 
     let saved;
     try {
-        saved = JSON.parse(stored);
+        const state = JSON.parse(stored);
+        if (state?.url === window.location.href && state.key === activePageKey)
+            saved = state.storage;
     } catch (error) {
-        return;
+        // The current session state remains available if an older entry is invalid.
     }
-    if (saved.url !== window.location.href || saved.key !== activePageKey ||
-        saved.width !== window.innerWidth)
-        return;
 
-    // The portrait is a CSS background: wait for its pixels before either reveal.
     const portrait = document.querySelector('.portrait-image .img');
     const portraitURL = portrait && getComputedStyle(portrait).backgroundImage
         .match(/^url\(["']?(.*?)["']?\)$/)?.[1];
-    const portraitImage = portraitURL ? new Image() : null;
-    if (portraitImage) {
-        portraitImage.src = portraitURL;
-        await portraitImage.decode().catch(() => {});
+    if (portraitURL) {
+        const image = new Image();
+        image.src = portraitURL;
+        await image.decode().catch(() => {});
     }
-
-    const freshBody = document.body;
-    const preview = new DOMParser().parseFromString(saved.body, 'text/html').body;
-    preview.inert = true;
-    preview.querySelectorAll('script').forEach(script => script.remove());
-    const root = document.documentElement;
-    document.body.replaceWith(document.importNode(preview, true));
-    root.classList.add('refresh-preview', 'fade-in');
-    window.scrollTo({top: Number(saved.storage.scrollPosition) || 0, behavior: 'instant'});
-    await new Promise(resolve => requestPageFrame(() => requestPageFrame(resolve)));
-    root.classList.remove('refresh-preview');
-    await coverPage();
-    document.body.replaceWith(freshBody);
-    if (portraitImage)
-        await portraitImage.decode().catch(() => {});
-    for (const [key, value] of Object.entries(saved.storage)) {
-        if (value === null)
-            sessionStorage.removeItem(key);
-        else
-            sessionStorage.setItem(key, value);
+    if (saved) {
+        for (const [key, value] of Object.entries(saved)) {
+            if (value === null)
+                sessionStorage.removeItem(key);
+            else
+                sessionStorage.setItem(key, value);
+        }
     }
 }
 
@@ -335,7 +304,7 @@ function initializePageNavigation() {
     initialURL.hash = '';
     pageDocuments.set(initialURL.href, document.documentElement.outerHTML);
     document.querySelectorAll('script[src]').forEach(script => loadedPageScripts.add(script.src));
-    window.addEventListener('pagehide', rememberReloadView);
+    window.addEventListener('pagehide', rememberReloadState);
     window.addEventListener('popstate', event => {
         let key = event.state?.sitePageKey;
         if (!key) {
