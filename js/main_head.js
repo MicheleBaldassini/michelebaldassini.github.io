@@ -627,20 +627,10 @@ function createSearchHitElement({key, title, info, type, link}) {
             const offsetPosition = targetElement
                 ? targetElement.getBoundingClientRect().top + window.scrollY - 116
                 : 0;
-            const visit = pageVisit;
-            pageNavigationPending = true;
-            await coverPage();
-            if (!searchBar.isConnected || pageReloadPending || visit !== pageVisit)
-                return;
-
             window.scrollTo({
                 top: offsetPosition,
-                behavior: 'instant'
+                behavior: 'smooth'
             });
-            sectionClick = false;
-            if (document.querySelector('#about, #info'))
-                highlightActiveSection();
-            revealPage();
         } else {
 
             const l = link.split('#')[0];
