@@ -6,7 +6,6 @@
 html {
     -ms-overflow-style: none;
     scrollbar-width: none;
-    overscroll-behavior-y: none;
 }
 
 html::-webkit-scrollbar {
@@ -20,7 +19,6 @@ body {
     margin-top: 80px;
     background-color: inherit;
     padding-top: 0;
-    overscroll-behavior-y: none;
 }
 
 /* Keep an opaque page behind the transition, including on mobile. */
@@ -47,6 +45,12 @@ html.fade-out::before {
 
 html.fade-out {
     cursor: progress;
+}
+
+html.gesture-navigation::before {
+    transition: none;
+    opacity: 0;
+    pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

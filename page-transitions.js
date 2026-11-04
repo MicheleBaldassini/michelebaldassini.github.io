@@ -1,26 +1,26 @@
-// Coordinate the real outgoing fade with a reload; responses are never cached here.
+// Coordinate normal reload fades; gesture refreshes keep the current document.
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
 
-function currentClientURL(client) {
+function messageClient(client, type, url, wait = 400) {
     return new Promise(resolve => {
         const channel = new MessageChannel();
-        const finish = url => {
+        const finish = value => {
             clearTimeout(timeout);
             channel.port1.close();
-            resolve({client, url});
+            resolve(value);
         };
-        const timeout = setTimeout(() => finish(null), 400);
+        const timeout = setTimeout(() => finish(null), wait);
         channel.port1.onmessage = event => finish(event.data);
         try {
-            client.postMessage({type: 'site-reload-url'}, [channel.port2]);
+            client.postMessage({type, url}, [channel.port2]);
         } catch (error) {
             finish(null);
         }
     });
 }
 
-async function coverReloadingClient(event) {
+async function reloadPage(event) {
     const url = new URL(event.request.url);
     url.hash = '';
     const clientID = event.clientId || event.replacesClientId;
@@ -32,32 +32,26 @@ async function coverReloadingClient(event) {
         if (clients.length === 1) {
             client = clients[0];
         } else {
-            const locations = await Promise.all(clients.map(currentClientURL));
+            const locations = await Promise.all(clients.map(async client => ({
+                client, url: await messageClient(client, 'site-reload-url')
+            })));
             const matches = locations.filter(candidate => candidate.url === url.href);
-            if (matches.length !== 1)
-                return;
-            client = matches[0].client;
+            if (matches.length === 1)
+                client = matches[0].client;
         }
     }
 
-    await new Promise(resolve => {
-        const channel = new MessageChannel();
-        const finish = () => {
-            clearTimeout(timeout);
-            channel.port1.close();
-            resolve();
-        };
-        const timeout = setTimeout(finish, 1000);
-        channel.port1.onmessage = event => {
-            if (event.data === 'covered')
-                finish();
-        };
-        try {
-            client.postMessage({type: 'site-reload-cover', url: url.href}, [channel.port2]);
-        } catch (error) {
-            finish();
-        }
-    });
+    const mode = client && await messageClient(client, 'site-reload-mode', url.href);
+    if (mode === 'unchanged') {
+        // Let the native refresh request finish without replacing the visible page.
+        await fetch(event.request).catch(() => {});
+        return new Response(null, {status: 204, headers: {'Cache-Control': 'no-store'}});
+    }
+    // Fetch first: a failed request must not leave the current page covered.
+    const response = await fetch(event.request);
+    if (response.ok && client)
+        await messageClient(client, 'site-reload-cover', url.href, 1000);
+    return response;
 }
 
 self.addEventListener('fetch', event => {
@@ -68,11 +62,5 @@ self.addEventListener('fetch', event => {
         !['reload', 'no-cache'].includes(event.request.cache)))
         return;
 
-    event.respondWith((async () => {
-        // Fetch first: a failed request must not leave the current page covered.
-        const response = await fetch(event.request);
-        if (response.ok)
-            await coverReloadingClient(event).catch(() => {});
-        return response;
-    })());
+    event.respondWith(reloadPage(event));
 });

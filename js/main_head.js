@@ -18,6 +18,8 @@ metaTag.setAttribute('content', theme_color);
 
 let pageNavigationPending = false;
 let pageReloadPending = false;
+let lastHistoryGesture = -Infinity;
+let lastReloadGesture = -Infinity;
 let pageMap;
 let navType = detectReload();
 let activePageURL = window.location.href;
@@ -87,8 +89,12 @@ function revealPage() {
             pageNavigationPending = false;
             const duration = parseFloat(getComputedStyle(root, '::before').transitionDuration) * 1000 || 0;
             fallback = setTimeout(revealed, duration + 80);
-            if (!duration)
+            if (!duration) {
                 revealed();
+                // Commit the visible page before restoring normal transitions.
+                getComputedStyle(root, '::before').opacity;
+                root.classList.remove('gesture-navigation');
+            }
         });
     });
 }
@@ -163,6 +169,13 @@ function initializeReloadTransition() {
         current.hash = '';
         if (event.data?.type === 'site-reload-url') {
             event.ports[0].postMessage(current.href);
+            event.ports[0].close();
+            return;
+        }
+        if (event.data?.type === 'site-reload-mode' && event.data.url === current.href) {
+            const gesture = performance.now() - lastReloadGesture < 2500;
+            lastReloadGesture = -Infinity;
+            event.ports[0].postMessage(gesture ? 'unchanged' : 'reload');
             event.ports[0].close();
             return;
         }
@@ -294,7 +307,45 @@ async function loadPageAssets(page, url) {
     await Promise.all(pendingStyles);
 }
 
-async function navigateWithFade(url, entryKey) {
+
+async function closeNavigationPanels() {
+    const toggler = document.querySelector('.navbar-toggler');
+    if (!toggler || (getComputedStyle(toggler).display === 'none' &&
+        !window.matchMedia('(pointer: coarse)').matches))
+        return;
+
+    const menu = document.getElementById('navbarResponsive');
+    const menuFinished = () => new Promise(resolve => {
+        const done = () => {
+            menu.removeEventListener('shown.bs.collapse', done);
+            menu.removeEventListener('hidden.bs.collapse', done);
+            resolve();
+        };
+        menu.addEventListener('shown.bs.collapse', done);
+        menu.addEventListener('hidden.bs.collapse', done);
+    });
+    if (menu.classList.contains('collapsing'))
+        await menuFinished();
+    if (menu.classList.contains('show')) {
+        const closed = menuFinished();
+        menu.classList.remove('active-refreshed');
+        bootstrap.Collapse.getOrCreateInstance(menu, {toggle: false}).hide();
+        await closed;
+    }
+    sessionStorage.setItem('isNavbarOpen', 'false');
+
+    const search = document.getElementById('searchBar');
+    const input = document.getElementById('search-input');
+    document.getElementById('search-results').classList.remove('visible');
+    search.classList.remove('active', 'active-refreshed');
+    document.getElementById('btn-search').classList.remove('active', 'active-refreshed');
+    sessionStorage.setItem('isSearchOpen', 'false');
+    input.blur();
+    await Promise.allSettled(search.getAnimations().map(animation => animation.finished));
+    input.blur();
+}
+
+async function navigateWithFade(url, entryKey, animate = true) {
     const destination = new URL(url, window.location.href);
     if (destination.origin !== window.location.origin) {
         window.location.assign(destination.href);
@@ -309,10 +360,16 @@ async function navigateWithFade(url, entryKey) {
     const visit = new AbortController();
     pageVisit = visit;
     pageNavigationPending = true;
+    document.documentElement.classList.toggle('gesture-navigation', !animate);
     const pageURL = new URL(destination.href);
     pageURL.hash = '';
 
     try {
+        if (entryKey) {
+            await closeNavigationPanels();
+            if (visit.signal.aborted)
+                return;
+        }
         const content = pageDocuments.has(pageURL.href)
             ? Promise.resolve(pageDocuments.get(pageURL.href))
             : fetch(pageURL.href, {signal: visit.signal}).then(response => {
@@ -320,7 +377,7 @@ async function navigateWithFade(url, entryKey) {
                     throw new Error('Page unavailable');
                 return response.text();
             });
-        const [html] = await Promise.all([content, coverPage()]);
+        const [html] = await Promise.all([content, animate ? coverPage() : undefined]);
         if (visit.signal.aborted)
             return;
         const page = new DOMParser().parseFromString(html, 'text/html');
@@ -364,6 +421,10 @@ async function navigateWithFade(url, entryKey) {
                 else
                     sessionStorage.setItem(key, value);
             }
+            sessionStorage.setItem('isNavbarOpen', 'false');
+            sessionStorage.setItem('isSearchOpen', 'false');
+            for (const key of ['searchInput', 'searchResults', 'searchResultsScrollTop', 'searchQuery'])
+                sessionStorage.removeItem(key);
         }
         initializePage(Boolean(saved));
         if (!saved && destination.hash) {
@@ -397,10 +458,90 @@ function initializePageNavigation() {
             key = Date.now() + '-' + Math.random().toString(36).slice(2);
             history.replaceState({...event.state, sitePageKey: key}, '', window.location.href);
         }
-        navigateWithFade(window.location.href, key);
+        const gesture = event.hasUAVisualTransition || performance.now() - lastHistoryGesture < 1000;
+        lastHistoryGesture = -Infinity;
+        navigateWithFade(window.location.href, key, !gesture);
     });
+    initializePageGestures();
 }
 
+
+function initializePageGestures() {
+    let start;
+    document.addEventListener('touchstart', event => {
+        lastHistoryGesture = lastReloadGesture = -Infinity;
+        start = null;
+        const target = event.target;
+        if (event.touches.length !== 1 || target.closest(
+            '.leaflet-container, input, textarea, select, [contenteditable="true"]'))
+            return;
+        for (let element = target; element && element !== document.body;
+            element = element.parentElement) {
+            if (element.scrollWidth > element.clientWidth &&
+                /auto|scroll/.test(getComputedStyle(element).overflowX))
+                return;
+        }
+        const touch = event.touches[0];
+        start = {x: touch.clientX, y: touch.clientY, time: performance.now(),
+            atTop: window.scrollY <= 0, horizontal: false, vertical: false, claimed: false, dx: 0};
+    }, {passive: true});
+
+    document.addEventListener('touchmove', event => {
+        if (!start)
+            return;
+        if (event.touches.length !== 1) {
+            start = null;
+            lastHistoryGesture = lastReloadGesture = -Infinity;
+            return;
+        }
+        const dx = event.touches[0].clientX - start.x;
+        const dy = event.touches[0].clientY - start.y;
+        if (!start.horizontal) {
+            if (start.vertical || (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 8)) {
+                start.vertical = true;
+                // Observe pull-to-refresh without cancelling the browser's gesture.
+                if (start.atTop && window.scrollY <= 0 && dy > 8)
+                    lastReloadGesture = performance.now();
+                else
+                    lastReloadGesture = -Infinity;
+                return;
+            }
+            if (Math.abs(dx) <= 12 || Math.abs(dx) <= Math.abs(dy) * 1.5)
+                return;
+            start.horizontal = true;
+        }
+        start.dx = dx;
+        lastHistoryGesture = performance.now();
+        // Own only cancellable horizontal gestures, so the browser cannot also navigate.
+        if (event.cancelable && !event.defaultPrevented) {
+            event.preventDefault();
+            start.claimed = true;
+        }
+    }, {passive: false});
+
+    document.addEventListener('touchend', event => {
+        const swipe = start;
+        start = null;
+        if (!swipe?.claimed)
+            return;
+        if (event.touches.length || Math.abs(swipe.dx) < 70 ||
+            performance.now() - swipe.time > 1000 || pageNavigationPending || pageReloadPending) {
+            lastHistoryGesture = -Infinity;
+            return;
+        }
+        lastHistoryGesture = performance.now();
+        history.go(swipe.dx > 0 ? -1 : 1);
+    }, {passive: true});
+    document.addEventListener('touchcancel', () => { start = null; }, {passive: true});
+    window.addEventListener('popstate', () => { start = null; });
+    document.addEventListener('pointerdown', event => {
+        if (event.pointerType !== 'touch')
+            lastHistoryGesture = lastReloadGesture = -Infinity;
+    }, {passive: true});
+    document.addEventListener('keydown', () => {
+        lastHistoryGesture = lastReloadGesture = -Infinity;
+    });
+}
 
 function detectReload() {
     const navType = performance.getEntriesByType('navigation')[0].type;
