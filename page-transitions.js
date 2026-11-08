@@ -44,9 +44,10 @@ async function reloadPage(event, knownReload) {
     const mode = client && await messageClient(client,
         knownReload ? 'site-reload-mode' : 'site-reload-gesture', url.href);
     if (mode === 'unchanged') {
-        // Let the native refresh request finish without replacing the visible page.
-        await fetch(event.request).catch(() => {});
+        const refresh = fetch(event.request).catch(() => {});
+        // Chromium can start dismissing its indicator while the request runs.
         client.postMessage({type: 'site-reload-complete', url: url.href});
+        await refresh;
         return new Response(null, {status: 204, headers: {'Cache-Control': 'no-store'}});
     }
     // Fetch first: a failed request must not leave the current page covered.
