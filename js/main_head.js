@@ -753,7 +753,7 @@ function initIsotope() {
 function createSearchHitElement({key, title, info, type, link}) {
     const destination = new URL(link, siteIndexURL);
     if (destination.origin !== window.location.origin &&
-        ['michelebalda.altervista.org', 'michelebaldassini.github.io'].includes(destination.hostname.replace(/^www\./, ''))) {
+        destination.hostname.replace(/^www\./, '') === 'michelebaldassini.github.io') {
         // Keep this site's indexed links on the host and base path currently in use.
         destination.href = new URL(destination.pathname.replace(/^\/+/, '') + destination.search + destination.hash,
             new URL('./', siteIndexURL)).href;
