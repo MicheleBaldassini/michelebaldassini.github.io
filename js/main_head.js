@@ -163,18 +163,34 @@ function initializeReloadTransition() {
         return;
 
     navigator.serviceWorker.addEventListener('message', async event => {
-        if (event.source !== navigator.serviceWorker.controller || !event.ports[0])
+        if (event.source !== navigator.serviceWorker.controller)
             return;
         const current = new URL(window.location.href);
         current.hash = '';
+        if (event.data?.type === 'site-reload-complete') {
+            const androidChromium = navigator.userAgentData?.platform === 'Android' ||
+                /Android.*Chrome\//.test(navigator.userAgent);
+            if (event.data.url === current.href && androidChromium &&
+                !pageNavigationPending && !pageReloadPending) {
+                // A same-document commit dismisses Chromium's native refresh indicator.
+                history.replaceState(history.state, '', window.location.href);
+            }
+            return;
+        }
+        if (!event.ports[0])
+            return;
         if (event.data?.type === 'site-reload-url') {
             event.ports[0].postMessage(current.href);
             event.ports[0].close();
             return;
         }
-        if (event.data?.type === 'site-reload-mode' && event.data.url === current.href) {
-            const gesture = performance.now() - lastReloadGesture < 2500;
-            lastReloadGesture = -Infinity;
+        const gestureOnly = event.data?.type === 'site-reload-gesture';
+        if (gestureOnly || event.data?.type === 'site-reload-mode') {
+            const samePage = event.data.url === current.href;
+            const gesture = samePage && performance.now() - lastReloadGesture < 2500 &&
+                (!gestureOnly || document.visibilityState === 'visible');
+            if (samePage && (!gestureOnly || gesture))
+                lastReloadGesture = -Infinity;
             event.ports[0].postMessage(gesture ? 'unchanged' : 'reload');
             event.ports[0].close();
             return;

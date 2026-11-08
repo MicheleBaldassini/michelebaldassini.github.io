@@ -20,7 +20,7 @@ function messageClient(client, type, url, wait = 400) {
     });
 }
 
-async function reloadPage(event) {
+async function reloadPage(event, knownReload) {
     const url = new URL(event.request.url);
     url.hash = '';
     const clientID = event.clientId || event.replacesClientId;
@@ -41,15 +41,17 @@ async function reloadPage(event) {
         }
     }
 
-    const mode = client && await messageClient(client, 'site-reload-mode', url.href);
+    const mode = client && await messageClient(client,
+        knownReload ? 'site-reload-mode' : 'site-reload-gesture', url.href);
     if (mode === 'unchanged') {
         // Let the native refresh request finish without replacing the visible page.
         await fetch(event.request).catch(() => {});
+        client.postMessage({type: 'site-reload-complete', url: url.href});
         return new Response(null, {status: 204, headers: {'Cache-Control': 'no-store'}});
     }
     // Fetch first: a failed request must not leave the current page covered.
     const response = await fetch(event.request);
-    if (response.ok && client)
+    if (knownReload && response.ok && client)
         await messageClient(client, 'site-reload-cover', url.href, 1000);
     return response;
 }
@@ -58,9 +60,12 @@ self.addEventListener('fetch', event => {
     if (event.request.mode !== 'navigate')
         return;
     const reload = event.request.isReloadNavigation ?? event.isReload;
-    if (reload === false || (reload === undefined &&
-        !['reload', 'no-cache'].includes(event.request.cache)))
-        return;
-
-    event.respondWith(reloadPage(event));
+    const knownReload = reload === true || (reload === undefined &&
+        ['reload', 'no-cache'].includes(event.request.cache));
+    // WebKit's native refresh can arrive as an ordinary document request.
+    const possibleWebKitReload = reload === undefined && event.request.cache === 'default' &&
+        event.request.destination === 'document' && !event.request.referrer &&
+        navigator.userAgent.includes('AppleWebKit') && !navigator.userAgent.includes('Chrome/');
+    if (knownReload || possibleWebKitReload)
+        event.respondWith(reloadPage(event, knownReload));
 });
