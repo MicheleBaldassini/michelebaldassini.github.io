@@ -73,6 +73,8 @@ function revealPage() {
         requestPageFrame(() => {
             if (pageReloadPending)
                 return;
+            // Resolve the cover's starting opacity before changing the reveal classes.
+            getComputedStyle(root, '::before').opacity;
             let fallback;
             const revealed = event => {
                 if (event && (event.target !== root || event.pseudoElement !== '::before' ||
@@ -162,11 +164,88 @@ function initializeReloadTransition() {
     if (!('serviceWorker' in navigator) || !window.isSecureContext)
         return;
 
+    const chromium = navigator.userAgent.includes('Chrome/');
+    const desktopWebKit = /Macintosh.*AppleWebKit/.test(navigator.userAgent) &&
+        !chromium && navigator.maxTouchPoints === 0;
+    const desktopFirefox = navigator.userAgent.includes('Firefox/') &&
+        !navigator.userAgent.includes('Android');
+    let beforeUnloadTime = -Infinity;
+    let desktopReload;
+    const markDeparture = () => {
+        beforeUnloadTime = performance.now();
+    };
+    const cancelDesktopReload = () => {
+        if (!desktopReload)
+            return;
+        desktopReload = undefined;
+        pageReloadPending = false;
+        pageNavigationPending = false;
+    };
+    if (desktopWebKit || chromium)
+        window.addEventListener('beforeunload', markDeparture);
+    if (desktopWebKit) {
+        window.addEventListener('popstate', cancelDesktopReload);
+        window.addEventListener('pageshow', event => {
+            if (event.persisted)
+                cancelDesktopReload();
+        });
+    }
+    if (desktopFirefox) {
+        // The address bar takes focus before Firefox navigates to the same URL.
+        let departureListenerTimeout;
+        const clearDepartureListener = () => {
+            clearTimeout(departureListenerTimeout);
+            window.removeEventListener('beforeunload', markDeparture);
+        };
+        window.addEventListener('blur', () => {
+            clearTimeout(departureListenerTimeout);
+            if (!document.hidden)
+                window.addEventListener('beforeunload', markDeparture, {once: true});
+        });
+        window.addEventListener('focus', () => {
+            // Pressing Enter returns focus to the document just before beforeunload.
+            clearTimeout(departureListenerTimeout);
+            departureListenerTimeout = setTimeout(clearDepartureListener, 250);
+        });
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden)
+                clearDepartureListener();
+        });
+    }
+
     navigator.serviceWorker.addEventListener('message', async event => {
         if (event.source !== navigator.serviceWorker.controller)
             return;
         const current = new URL(window.location.href);
         current.hash = '';
+        const samePage = event.data?.url === current.href;
+        if (event.data?.type === 'site-reload-restart') {
+            if (desktopWebKit && samePage && !pageReloadPending) {
+                const reload = {prepared: false};
+                desktopReload = reload;
+                pageReloadPending = true;
+                pageNavigationPending = true;
+                // WebKit resumes rendering after the first navigation returns 204.
+                requestAnimationFrame(async () => {
+                    if (desktopReload !== reload)
+                        return;
+                    rememberReloadState();
+                    await coverPage();
+                    if (desktopReload !== reload)
+                        return;
+                    reload.prepared = true;
+                    window.location.reload();
+                });
+            }
+            return;
+        }
+        if (event.data?.type === 'site-reload-cancel') {
+            if (samePage && desktopReload?.prepared) {
+                cancelDesktopReload();
+                revealPage();
+            }
+            return;
+        }
         if (event.data?.type === 'site-reload-complete') {
             const androidChromium = navigator.userAgentData?.platform === 'Android' ||
                 /Android.*Chrome\//.test(navigator.userAgent);
@@ -184,14 +263,24 @@ function initializeReloadTransition() {
             event.ports[0].close();
             return;
         }
-        const gestureOnly = event.data?.type === 'site-reload-gesture';
-        if (gestureOnly || event.data?.type === 'site-reload-mode') {
-            const samePage = event.data.url === current.href;
-            const gesture = samePage && performance.now() - lastReloadGesture < 2500 &&
-                (!gestureOnly || document.visibilityState === 'visible');
-            if (samePage && (!gestureOnly || gesture))
+        const knownReload = event.data?.type === 'site-reload-mode';
+        const gestureProbe = event.data?.type === 'site-reload-gesture';
+        if (knownReload || gestureProbe || event.data?.type === 'site-reload-desktop') {
+            const now = performance.now();
+            const gesture = samePage && now - lastReloadGesture < 2500 &&
+                (knownReload || (gestureProbe && document.visibilityState === 'visible'));
+            const desktopReloadRequested = samePage && document.visibilityState === 'visible' &&
+                now - beforeUnloadTime < 2500;
+            if (samePage && (knownReload || gesture))
                 lastReloadGesture = -Infinity;
-            event.ports[0].postMessage(gesture ? 'unchanged' : 'reload');
+            if (desktopReloadRequested)
+                beforeUnloadTime = -Infinity;
+            let mode = gesture ? 'unchanged' : 'reload';
+            if (samePage && desktopReload?.prepared)
+                mode = 'prepared';
+            else if (!gesture && desktopReloadRequested)
+                mode = desktopWebKit ? 'restart' : 'address-reentry';
+            event.ports[0].postMessage(mode);
             event.ports[0].close();
             return;
         }
@@ -326,42 +415,54 @@ async function loadPageAssets(page, url) {
 
 async function closeNavigationPanels() {
     const toggler = document.querySelector('.navbar-toggler');
-    if (!toggler || (getComputedStyle(toggler).display === 'none' &&
-        !window.matchMedia('(pointer: coarse)').matches))
-        return;
-
-    const menu = document.getElementById('navbarResponsive');
-    const menuFinished = () => new Promise(resolve => {
-        const done = () => {
-            menu.removeEventListener('shown.bs.collapse', done);
-            menu.removeEventListener('hidden.bs.collapse', done);
-            resolve();
-        };
-        menu.addEventListener('shown.bs.collapse', done);
-        menu.addEventListener('hidden.bs.collapse', done);
-    });
-    if (menu.classList.contains('collapsing'))
-        await menuFinished();
-    if (menu.classList.contains('show')) {
-        const closed = menuFinished();
-        menu.classList.remove('active-refreshed');
-        bootstrap.Collapse.getOrCreateInstance(menu, {toggle: false}).hide();
-        await closed;
+    const hasDropdown = toggler && getComputedStyle(toggler).display !== 'none';
+    if (hasDropdown) {
+        const menu = document.getElementById('navbarResponsive');
+        const menuFinished = () => new Promise(resolve => {
+            const done = () => {
+                menu.removeEventListener('shown.bs.collapse', done);
+                menu.removeEventListener('hidden.bs.collapse', done);
+                resolve();
+            };
+            menu.addEventListener('shown.bs.collapse', done);
+            menu.addEventListener('hidden.bs.collapse', done);
+        });
+        if (menu.classList.contains('collapsing'))
+            await menuFinished();
+        if (menu.classList.contains('show')) {
+            const closed = menuFinished();
+            menu.classList.remove('active-refreshed');
+            bootstrap.Collapse.getOrCreateInstance(menu, {toggle: false}).hide();
+            await closed;
+        }
     }
     sessionStorage.setItem('isNavbarOpen', 'false');
 
-    const search = document.getElementById('searchBar');
-    const input = document.getElementById('search-input');
-    document.getElementById('search-results').classList.remove('visible');
-    search.classList.remove('active', 'active-refreshed');
-    document.getElementById('btn-search').classList.remove('active', 'active-refreshed');
-    sessionStorage.setItem('isSearchOpen', 'false');
-    input.blur();
-    await Promise.allSettled(search.getAnimations().map(animation => animation.finished));
-    input.blur();
+    const menuAnimations = hasDropdown ? toggler.getAnimations({subtree: true}) : [];
+    await Promise.all([
+        closeSearchPanel(),
+        Promise.allSettled(menuAnimations.map(animation => animation.finished))
+    ]);
 }
 
-async function navigateWithFade(url, entryKey, animate = true) {
+async function closeSearchPanel() {
+    const search = document.getElementById('searchBar');
+    const input = document.getElementById('search-input');
+    const results = document.getElementById('search-results');
+    const searchButton = document.getElementById('btn-search');
+    results.classList.remove('visible', 'refreshed');
+    search.classList.remove('active', 'active-refreshed');
+    searchButton.classList.remove('active', 'active-refreshed');
+    sessionStorage.setItem('isSearchOpen', 'false');
+    input.blur();
+    const animations = [search, input, results, search.querySelector('svg')]
+        .flatMap(element => element?.getAnimations() ?? []);
+    await Promise.allSettled(animations.map(animation => animation.finished));
+    if (!search.matches('.active, .active-refreshed'))
+        input.blur();
+}
+
+async function navigateWithFade(url, {entryKey, animate = true, scrollTarget} = {}) {
     const destination = new URL(url, window.location.href);
     if (destination.origin !== window.location.origin) {
         window.location.assign(destination.href);
@@ -376,16 +477,14 @@ async function navigateWithFade(url, entryKey, animate = true) {
     const visit = new AbortController();
     pageVisit = visit;
     pageNavigationPending = true;
-    document.documentElement.classList.toggle('gesture-navigation', !animate);
     const pageURL = new URL(destination.href);
     pageURL.hash = '';
 
     try {
-        if (entryKey) {
-            await closeNavigationPanels();
-            if (visit.signal.aborted)
-                return;
-        }
+        await closeNavigationPanels();
+        if (visit.signal.aborted)
+            return;
+        document.documentElement.classList.toggle('gesture-navigation', !animate);
         const content = pageDocuments.has(pageURL.href)
             ? Promise.resolve(pageDocuments.get(pageURL.href))
             : fetch(pageURL.href, {signal: visit.signal}).then(response => {
@@ -442,7 +541,7 @@ async function navigateWithFade(url, entryKey, animate = true) {
             for (const key of ['searchInput', 'searchResults', 'searchResultsScrollTop', 'searchQuery'])
                 sessionStorage.removeItem(key);
         }
-        initializePage(Boolean(saved));
+        initializePage(Boolean(saved), scrollTarget);
         if (!saved && destination.hash) {
             const target = document.getElementById(decodeURIComponent(destination.hash.slice(1)));
             if (target)
@@ -451,6 +550,8 @@ async function navigateWithFade(url, entryKey, animate = true) {
     } catch (error) {
         if (!visit.signal.aborted) {
             // Keep ordinary browser navigation available if fetching or parsing fails.
+            if (scrollTarget)
+                sessionStorage.setItem('scrollTo', scrollTarget);
             if (entryKey)
                 window.location.replace(destination.href);
             else
@@ -476,7 +577,7 @@ function initializePageNavigation() {
         }
         const gesture = event.hasUAVisualTransition || performance.now() - lastHistoryGesture < 1000;
         lastHistoryGesture = -Infinity;
-        navigateWithFade(window.location.href, key, !gesture);
+        navigateWithFade(window.location.href, {entryKey: key, animate: !gesture});
     });
     initializePageGestures();
 }
@@ -774,23 +875,18 @@ function createSearchHitElement({key, title, info, type, link}) {
 
     a.addEventListener('click', async function (e) {
         e.preventDefault();
-        const searchButton = document.getElementById('btn-search');
-        const searchBar = document.getElementById('searchBar');
-        document.getElementById('search-results').classList.remove('visible');
-        searchBar.classList.remove('active', 'active-refreshed');
-        searchButton.classList.remove('active', 'active-refreshed');
-        sessionStorage.setItem('isSearchOpen', 'false');
-        document.getElementById('search-input').blur();
-
-        await Promise.allSettled(searchBar.getAnimations().map(animation => animation.finished));
-        if (!searchBar.isConnected || pageNavigationPending || pageReloadPending)
+        if (pageNavigationPending || pageReloadPending)
             return;
 
         const current = new URL(window.location.href);
         const pagePath = url => url.pathname.replace(/\/index\.html$/, '/').replace(/\/+$/, '');
         const targetID = decodeURIComponent(destination.hash.slice(1));
-        sessionStorage.removeItem('scrollTo');
         if (current.origin === destination.origin && pagePath(current) === pagePath(destination)) {
+            const searchBar = document.getElementById('searchBar');
+            await closeSearchPanel();
+            if (!searchBar.isConnected || pageNavigationPending || pageReloadPending)
+                return;
+            sessionStorage.removeItem('scrollTo');
             const targetElement = document.getElementById(targetID);
             const offsetPosition = targetElement
                 ? targetElement.getBoundingClientRect().top + window.scrollY - 116
@@ -800,12 +896,9 @@ function createSearchHitElement({key, title, info, type, link}) {
                 behavior: 'smooth'
             });
         } else {
-
             const pageURL = new URL(destination.href);
             pageURL.hash = '';
-            if (targetID)
-                sessionStorage.setItem('scrollTo', targetID);
-            navigateWithFade(pageURL.href);
+            navigateWithFade(pageURL.href, {scrollTarget: targetID});
         }
     });
     

@@ -9,19 +9,7 @@ function initializeFadeEffect() {
                 return;
 
             e.preventDefault();
-            const url = link.getAttribute('href');
-
-            document.getElementById('search-results').classList.remove('visible');
-
-            const searchButton = document.getElementById('btn-search');
-            const searchBar = document.getElementById('searchBar');
-
-            if (searchBar.classList.contains('active')) {
-                searchBar.classList.remove('active');
-                searchButton.classList.remove('active');
-            }
-
-            navigateWithFade(url);
+            navigateWithFade(link.getAttribute('href'));
         });
     });
 }
@@ -127,35 +115,56 @@ const navbarObserver = new MutationObserver((mutationsList) => {
 function toggleSearch() {
     const searchButton = document.getElementById('btn-search');
     const searchBar = document.getElementById('searchBar');
-
     const navbarCollapse = document.getElementById('navbarResponsive');
+    let openAfterMenu;
 
-    searchButton.addEventListener('click', function () {
-        const isNavbarOpen = navbarCollapse.classList.contains('show');
+    const openSearch = () => {
+        searchBar.classList.add('active');
+        searchButton.classList.add('active');
+        sessionStorage.setItem('isSearchOpen', 'true');
 
-        searchBar.classList.toggle('active');
-        searchButton.classList.toggle('active');
-
-        sessionStorage.setItem('isSearchOpen', searchBar.classList.contains('active'));
-
-        if (searchBar.classList.contains('active')) {
-            const searchResults = document.getElementById('search-results');
-            if (searchResults.children.length > 0) {
-                searchResults.classList.add('visible');
-
-                setPageTimeout(() => {
-                    document.querySelectorAll('.search-hit').forEach(el => {
-                        el.classList.add('visible');
-                    });
-                }, 100);
-            }
-
-            if (!isNavbarOpen)
-                setPageTimeout(() => {
-                    document.getElementById('search-input').focus();
-                }, 400);
-
+        const searchResults = document.getElementById('search-results');
+        if (searchResults.children.length > 0) {
+            searchResults.classList.add('visible');
+            setPageTimeout(() => {
+                document.querySelectorAll('.search-hit').forEach(hit => hit.classList.add('visible'));
+            }, 100);
         }
+        setPageTimeout(() => {
+            if (searchBar.classList.contains('active') && !pageNavigationPending)
+                document.getElementById('search-input').focus();
+        }, 400);
+    };
+
+    searchButton.addEventListener('pointerdown', event => {
+        // Let the click close the panel before the input's blur handler can.
+        if (searchBar.matches('.active, .active-refreshed'))
+            event.preventDefault();
+    });
+
+    searchButton.addEventListener('click', () => {
+        if (openAfterMenu) {
+            navbarCollapse.removeEventListener('hidden.bs.collapse', openAfterMenu);
+            openAfterMenu = undefined;
+            return;
+        }
+        if (searchBar.matches('.active, .active-refreshed')) {
+            closeSearchPanel();
+            return;
+        }
+        if (!navbarCollapse.classList.contains('show')) {
+            openSearch();
+            return;
+        }
+
+        openAfterMenu = () => {
+            openAfterMenu = undefined;
+            if (!pageNavigationPending && !pageReloadPending)
+                openSearch();
+        };
+        navbarCollapse.addEventListener('hidden.bs.collapse', openAfterMenu, {once: true});
+        navbarCollapse.classList.remove('active-refreshed');
+        bootstrap.Collapse.getOrCreateInstance(navbarCollapse, {toggle: false}).hide();
     });
 }
 
@@ -165,51 +174,8 @@ function collapseNavbar(event) {
     const navbarCollapse = document.getElementById('navbarResponsive');
 
     const themeToggler = document.getElementsByClassName('theme-toggle')[0];
-    const searchToggler = document.getElementById('btn-search');
-    const searchCollapse = document.getElementById('searchBar');
 
     const isNavbarOpen = navbarCollapse.classList.contains('show');
-
-    if (isNavbarOpen && searchToggler.contains(event.target)) {
-
-        const openSearch = () => {
-            searchCollapse.classList.toggle('active');
-            searchToggler.classList.toggle('active');
-            sessionStorage.setItem('isSearchOpen', searchCollapse.classList.contains('active'));
-            const searchResults = document.getElementById('search-results');
-
-            if (searchResults.children.length > 0) {
-                searchResults.classList.add('visible');
-
-                document.querySelectorAll('.search-hit').forEach(el => {
-                    el.classList.add('visible');
-                });
-            }
-            /*
-            let timeout = 400;
-            let isFirstClick = sessionStorage.getItem('firstClick') !== 'false';
-            const headerContainer = document.querySelector('.search-hit-header');
-
-            if (isFirstClick && !headerContainer) {
-                timeout = 700;
-                sessionStorage.setItem('firstClick', 'false');
-            } else
-                timeout = 1200;
-            */
-
-            setPageTimeout(() => {
-                document.getElementById('search-input').focus();
-            }, 400);
-        };
-
-        const onHidden = () => {
-            openSearch();
-            navbarCollapse.removeEventListener('hidden.bs.collapse', onHidden);
-            sessionStorage.setItem('isNavbarOpen', navbarCollapse.classList.contains('show'));
-        };
-        navbarCollapse.addEventListener('hidden.bs.collapse', onHidden);
-        navbarToggler.click();
-    }
 
     if (isNavbarOpen &&
         (!themeToggler.contains(event.target)) &&
@@ -291,10 +257,46 @@ function sectionNavigation() {
         home = true;
     }
 
+    const timedScroll = home && navigator.userAgent.includes('AppleWebKit/') &&
+        !navigator.userAgent.includes('Chrome/');
+    let scrollRequest = 0;
+
+    function scrollToSection(top, request) {
+        if (!timedScroll) {
+            window.scrollTo({top, behavior: 'smooth'});
+            return;
+        }
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            window.scrollTo({top, behavior: 'instant'});
+            return;
+        }
+
+        const start = window.scrollY;
+        const root = document.scrollingElement;
+        const distance = Math.max(0, Math.min(top, root.scrollHeight - root.clientHeight)) - start;
+        const duration = Math.min(750, 400 + Math.abs(distance) / 4);
+        let startTime;
+        let lastPosition = start;
+        const step = time => {
+            if (request !== scrollRequest || pageNavigationPending || Math.abs(window.scrollY - lastPosition) > 1)
+                return;
+            startTime ??= time;
+            const progress = Math.min((time - startTime) / duration, 1);
+            const eased = progress * progress * (3 - 2 * progress);
+            window.scrollTo({top: start + distance * eased, behavior: 'instant'});
+            lastPosition = window.scrollY;
+            if (progress < 1)
+                requestPageFrame(step);
+        };
+        if (distance)
+            requestPageFrame(step);
+    }
+
     links.forEach(link => {
         link.addEventListener('click', function (event) {
             event.preventDefault();
 
+            const request = ++scrollRequest;
             sectionClick = true;
 
             links.forEach(l => l.parentElement.classList.remove('active'));
@@ -320,13 +322,17 @@ function sectionNavigation() {
             }
     
             setPageTimeout(() => {
+                if (request !== scrollRequest)
+                    return;
                 document.getElementById('search-results').replaceChildren();
                 sessionStorage.setItem('searchInput', '');
 
                 setPageTimeout(() => {
+                    if (request !== scrollRequest || pageNavigationPending)
+                        return;
                     const targetId = sectionClass.replace('-link', '');
                     if (targetId === 'about' || targetId === 'info') {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        scrollToSection(0, request);
                     } else {
                         const targetElement = document.getElementById(targetId);
 
@@ -335,14 +341,14 @@ function sectionNavigation() {
                             let offsetPosition = elementPosition - 56;
                             if (!home)
                                 offsetPosition -= 20;
-                            window.scrollTo({
-                                top: offsetPosition,
-                                behavior: 'smooth'
-                            });
+                            scrollToSection(offsetPosition, request);
                         }
                     }
                     sessionStorage.setItem('activeSection', targetId);
-                    setPageTimeout(() => sectionClick = false, 800);
+                    setPageTimeout(() => {
+                        if (request === scrollRequest)
+                            sectionClick = false;
+                    }, 800);
                 }, 50);
             }, 500);
         });
@@ -691,9 +697,10 @@ async function initSearch(indexURI) {
             return;
 
         const searchBar   = document.getElementById('searchBar');
+        const searchButton = document.getElementById('btn-search');
 
         searchInput.addEventListener('blur', (e) => {
-            if (e.relatedTarget === searchInput)
+            if (e.relatedTarget === searchInput || e.relatedTarget === searchButton)
                 return;
 
             setPageTimeout(() => {
@@ -823,7 +830,7 @@ var sectionClick = false;
 const COOKIE_DURATION_DAYS = 365;
 
 
-function initializePage(restoring = detectReload()) {
+function initializePage(restoring = detectReload(), scrollTarget) {
     restorePageState(restoring);
     const banner = document.querySelector('.cookie-window');
     const btn = document.querySelector('.cookie-btn');
@@ -942,7 +949,7 @@ function initializePage(restoring = detectReload()) {
 
     initSearch(siteIndexURL);
 
-    const p = sessionStorage.getItem('scrollTo');
+    const p = scrollTarget || sessionStorage.getItem('scrollTo');
     sessionStorage.removeItem('scrollTo');
     const targetElement = p ? document.getElementById(p) : null;
     if (targetElement) {
