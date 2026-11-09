@@ -1,19 +1,20 @@
 
 const siteIndexURL = new URL('../index.json', document.currentScript.src).href;
-const theme = localStorage.getItem('theme') || 'light-mode';
-document.documentElement.classList.add(theme);
+const standaloneCV = document.currentScript.hasAttribute('data-standalone-cv');
 let theme_color = '#ffffff';
-if (theme == 'light-mode')
-    theme_color = '#ffffff';
-else if (theme == 'dark-mode')
-    theme_color = '#000000';
-let metaTag = document.querySelector('meta[name="theme-color"]');
-if (!metaTag) {
-    metaTag = document.createElement('meta');
-    metaTag.name = 'theme-color';
-    document.head.appendChild(metaTag);
+if (!standaloneCV) {
+    const theme = localStorage.getItem('theme') || 'light-mode';
+    document.documentElement.classList.add(theme);
+    if (theme === 'dark-mode')
+        theme_color = '#000000';
+    let metaTag = document.querySelector('meta[name="theme-color"]');
+    if (!metaTag) {
+        metaTag = document.createElement('meta');
+        metaTag.name = 'theme-color';
+        document.head.appendChild(metaTag);
+    }
+    metaTag.setAttribute('content', theme_color);
 }
-metaTag.setAttribute('content', theme_color);
 
 
 let pageNavigationPending = false;
@@ -148,6 +149,8 @@ function savePageState() {
 const reloadStateKey = 'site-reload-state';
 
 function rememberReloadState() {
+    if (standaloneCV)
+        return;
     try {
         savePageState();
         sessionStorage.setItem(reloadStateKey, JSON.stringify({
@@ -315,7 +318,7 @@ function initializeReloadTransition() {
 }
 
 async function preparePortrait() {
-    const portrait = document.querySelector('.portrait-image .img');
+    const portrait = document.querySelector(standaloneCV ? '.pic-holder .img' : '.portrait-image .img');
     const portraitURL = portrait && getComputedStyle(portrait).backgroundImage
         .match(/^url\(["']?(.*?)["']?\)$/)?.[1];
     if (portraitURL) {
@@ -623,6 +626,8 @@ function initializePageGestures() {
                     lastReloadGesture = -Infinity;
                 return;
             }
+            if (standaloneCV)
+                return;
             if (Math.abs(dx) <= 12 || Math.abs(dx) <= Math.abs(dy) * 1.5)
                 return;
             start.horizontal = true;
@@ -1146,8 +1151,21 @@ function restorePageState(restoring) {
 }
 
 
-window.addEventListener('scroll', function () {
-    sessionStorage.setItem('scrollPosition', window.scrollY);
-});
-
 const reloadTransitionReady = initializeReloadTransition();
+
+if (standaloneCV) {
+    document.addEventListener('DOMContentLoaded', async () => {
+        initializePageGestures();
+        await Promise.allSettled([reloadTransitionReady, preparePortrait()]);
+        revealPage();
+    });
+    window.addEventListener('pageshow', event => {
+        if (event.persisted)
+            revealPage();
+    });
+    document.documentElement.classList.remove('fade-in');
+} else {
+    window.addEventListener('scroll', () => {
+        sessionStorage.setItem('scrollPosition', window.scrollY);
+    });
+}
