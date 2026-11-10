@@ -30,6 +30,8 @@
         <meta name='robots' content='index, follow'>
         <link rel='canonical' href='https://michelebalda.altervista.org/'>
 
+        <link rel='preload' as='image' href='images/photo.jpg' fetchpriority='high'>
+
         <!-- Favicon -->
         <link rel='icon' type='image/x-icon' href='favicon/favicon.ico'>
         <link rel='shortcut icon' type='image/x-icon' href='favicon/favicon.ico'>
@@ -66,13 +68,22 @@
                 "@context": "https://schema.org",
                 "@graph": [
                     {
+                        "@type": "WebPage",
+                        "@id": "https://michelebaldassini.github.io/",
+                        "url": "https://michelebaldassini.github.io/",
+                        "name": "Michele Baldassini | Home",
+                        "primaryImageOfPage": {
+                            "@id": "https://michelebaldassini.github.io/images/photo.jpg"
+                        }
+                    },
+                    {
                         "@type": "ImageObject",
                         "@id": "https://michelebaldassini.github.io/images/photo.jpg",
                         "contentUrl": "https://michelebaldassini.github.io/images/photo.jpg",
                         "url": "https://michelebaldassini.github.io/images/photo.jpg",
                         "width": 420,
                         "height": 420,
-                        "caption": "Portrait photo",
+                        "caption": "Portrait photo of Michele Baldassini",
                         "inLanguage": "en-US"
                     }
                 ]
@@ -174,7 +185,9 @@
                 <div class='row'>
                     <div id='portrait' class='col-12 col-lg-4'>
                         <div class='portrait-image'>
-                            <div class='img'></div>
+                            <div class='img'>
+                                <img src='/images/photo.jpg' alt='Michele Baldassini' width='420' height='420' loading='eager' decoding='sync' fetchpriority='high'>
+                            </div>
                         </div>
                         <div class='portrait-title'>
                             <h1 class='h2'>Michele Baldassini</h1>
