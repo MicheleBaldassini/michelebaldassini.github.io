@@ -35,3 +35,9 @@ html.gesture-navigation::before {
         transition: none;
     }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+    html.external-entry.fade-in:not(.gesture-navigation)::before {
+        transition-duration: 0.5s;
+    }
+}

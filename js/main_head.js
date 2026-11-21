@@ -61,6 +61,10 @@ function requestPageFrame(callback) {
     return frame;
 }
 
+const initialNavigation = performance.getEntriesByType('navigation')[0];
+let externalEntryPending = initialNavigation?.type === 'navigate' &&
+    (!document.referrer || new URL(document.referrer).origin !== window.location.origin);
+
 function revealPage() {
     if (pageReloadPending)
         return;
@@ -83,11 +87,14 @@ function revealPage() {
                     return;
                 clearTimeout(fallback);
                 root.removeEventListener('transitionend', revealed);
+                root.classList.remove('external-entry');
                 if (!root.classList.contains('fade-out'))
                     bar?.classList.remove('no-animations');
             };
             root.addEventListener('transitionend', revealed);
             root.classList.remove('fade-out');
+            root.classList.toggle('external-entry', externalEntryPending);
+            externalEntryPending = false;
             root.classList.add('fade-in');
             pageNavigationPending = false;
             const duration = parseFloat(getComputedStyle(root, '::before').transitionDuration) * 1000 || 0;
