@@ -64,6 +64,57 @@ function requestPageFrame(callback) {
 const initialNavigation = performance.getEntriesByType('navigation')[0];
 let externalEntryPending = initialNavigation?.type === 'navigate' &&
     (!document.referrer || new URL(document.referrer).origin !== window.location.origin);
+let skipNextReveal = document.wasDiscarded === true || history.state?.sitePageBackgrounded === true;
+
+function initializePageVisibility() {
+    let pageLeaving = false;
+
+    function setPageBackgrounded(backgrounded) {
+        if (Boolean(history.state?.sitePageBackgrounded) === backgrounded)
+            return;
+        try {
+            history.replaceState({...history.state, sitePageBackgrounded: backgrounded}, '');
+        } catch (error) {
+            // The browser can prevent state changes while the document is leaving.
+        }
+    }
+
+    if (!document.hidden)
+        setPageBackgrounded(false);
+
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            setPageBackgrounded(false);
+            return;
+        }
+        if (pageLeaving)
+            return;
+
+        // Remember this history entry in case the browser rebuilds the tab.
+        setPageBackgrounded(true);
+        const root = document.documentElement;
+        if (!root.classList.contains('fade-in')) {
+            skipNextReveal = true;
+        } else if (Number(getComputedStyle(root, '::before').opacity) > 0) {
+            root.classList.add('gesture-navigation');
+            getComputedStyle(root, '::before').opacity;
+            root.classList.remove('gesture-navigation');
+        }
+    });
+
+    window.addEventListener('pagehide', () => {
+        pageLeaving = true;
+        setPageBackgrounded(false);
+    });
+
+    window.addEventListener('pageshow', event => {
+        pageLeaving = false;
+        if (event.persisted) {
+            skipNextReveal = true;
+            revealPage();
+        }
+    });
+}
 
 function revealPage() {
     if (pageReloadPending)
@@ -93,8 +144,11 @@ function revealPage() {
             };
             root.addEventListener('transitionend', revealed);
             root.classList.remove('fade-out');
-            root.classList.toggle('external-entry', externalEntryPending);
+            if (skipNextReveal)
+                root.classList.add('gesture-navigation');
+            root.classList.toggle('external-entry', externalEntryPending && !skipNextReveal);
             externalEntryPending = false;
+            skipNextReveal = false;
             root.classList.add('fade-in');
             pageNavigationPending = false;
             const duration = parseFloat(getComputedStyle(root, '::before').transitionDuration) * 1000 || 0;
@@ -587,6 +641,8 @@ function initializePageNavigation() {
         }
         const gesture = event.hasUAVisualTransition || performance.now() - lastHistoryGesture < 1000;
         lastHistoryGesture = -Infinity;
+        if (!pageNavigationPending && key === activePageKey && window.location.href === activePageURL)
+            return;
         navigateWithFade(window.location.href, {entryKey: key, animate: !gesture});
     });
     initializePageGestures();
@@ -1159,16 +1215,13 @@ function restorePageState(restoring) {
 
 
 const reloadTransitionReady = initializeReloadTransition();
+initializePageVisibility();
 
 if (standaloneCV) {
     document.addEventListener('DOMContentLoaded', async () => {
         initializePageGestures();
         await Promise.allSettled([reloadTransitionReady, preparePortrait()]);
         revealPage();
-    });
-    window.addEventListener('pageshow', event => {
-        if (event.persisted)
-            revealPage();
     });
     document.documentElement.classList.remove('fade-in');
 } else {

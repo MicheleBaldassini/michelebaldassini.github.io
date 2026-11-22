@@ -1039,12 +1039,3 @@ window.addEventListener('scroll', function () {
         !window.location.href.match(/teaching\/?$/))
         highlightActiveSection();
 });
-
-
-
-
-// Keep the cover in place while leaving; reveal cached pages when returning.
-window.addEventListener('pageshow', (event) => {
-    if (event.persisted)
-        revealPage();
-});
