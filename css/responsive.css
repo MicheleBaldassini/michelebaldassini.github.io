@@ -583,6 +583,14 @@
     }
 }
 
+@media screen and (max-width: 463px) {
+    .portrait-title h2 {
+        width: 70%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
 @media screen and (max-width: 420px) {
     .cookie-window {
         flex-wrap: wrap;
