@@ -302,6 +302,10 @@ function sectionNavigation() {
             links.forEach(l => l.parentElement.classList.remove('active'));
             this.parentElement.classList.add('active');
 
+            const courseMenu = mobileCourseContents();
+            if (courseMenu)
+                revealCourseLink(courseMenu, this);
+
             const sectionClass = Array.from(this.classList).find(cls =>
                 cls.endsWith('-link') && !cls.startsWith('nav')
             );
@@ -340,15 +344,19 @@ function sectionNavigation() {
                             const elementPosition = targetElement.getBoundingClientRect().top + window.scrollY;
                             let offsetPosition = elementPosition - 56;
                             if (!home)
-                                offsetPosition -= 20;
+                                offsetPosition -= 20 + courseMenuHeight();
                             scrollToSection(offsetPosition, request);
                         }
                     }
                     sessionStorage.setItem('activeSection', targetId);
-                    setPageTimeout(() => {
-                        if (request === scrollRequest)
+                    const releaseSectionClick = () => {
+                        document.removeEventListener('scrollend', releaseSectionClick);
+                        if (request === scrollRequest && this.isConnected)
                             sectionClick = false;
-                    }, 800);
+                    };
+                    if (courseMenu)
+                        document.addEventListener('scrollend', releaseSectionClick, {once: true});
+                    setPageTimeout(releaseSectionClick, courseMenu ? 1400 : 800);
                 }, 50);
             }, 500);
         });
@@ -356,9 +364,68 @@ function sectionNavigation() {
 }
 
 
+function mobileCourseContents() {
+    const menu = document.querySelector('.course-page > .toc .toc-links');
+    return menu && getComputedStyle(menu).display === 'flex' ? menu : null;
+}
+
+
+function revealCourseLink(menu, link) {
+    const menuBounds = menu.getBoundingClientRect();
+    const linkBounds = link.getBoundingClientRect();
+    let distance = 0;
+    if (linkBounds.left < menuBounds.left - 1)
+        distance = linkBounds.left - menuBounds.left;
+    else if (linkBounds.right > menuBounds.right + 1)
+        distance = linkBounds.right - menuBounds.right;
+
+    const animate = distance && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    menu.scrollTo({left: menu.scrollLeft + distance, behavior: animate ? 'smooth' : 'instant'});
+}
+
+
+function highlightCourseSection(menu, revealCurrent = false) {
+    const sections = document.querySelectorAll('.course-sections > div[id]');
+    if (!sections.length)
+        return;
+
+    const readingLine = menu.getBoundingClientRect().bottom + 20;
+    let current = sections[0];
+    for (const section of sections) {
+        if (section.getBoundingClientRect().top > readingLine)
+            break;
+        current = section;
+    }
+
+    const page = document.scrollingElement;
+    if (window.scrollY > 0 && window.scrollY + page.clientHeight >= page.scrollHeight - 1)
+        current = sections[sections.length - 1];
+
+    const link = menu.querySelector(`.${current.id}-link`);
+    if (!link)
+        return;
+
+    const changed = !link.parentElement.classList.contains('active');
+    if (changed) {
+        menu.querySelectorAll('li.active').forEach(item => item.classList.remove('active'));
+        link.parentElement.classList.add('active');
+        sessionStorage.setItem('activeSection', current.id);
+    }
+    if (changed || revealCurrent)
+        revealCourseLink(menu, link);
+}
+
+
 function highlightActiveSection() {
     if (sectionClick)
         return;
+
+    const courseMenu = mobileCourseContents();
+    if (courseMenu) {
+        highlightCourseSection(courseMenu);
+        return;
+    }
+
     let links, sections;
     if (window.location.href.includes('teaching')) {
         links = document.querySelectorAll('.info-link, .objectives-link, .syllabus-link, .exam-link, .registry-link, .material-link');
@@ -395,7 +462,7 @@ function highlightActiveSection() {
         return;
     }
 
-    const scrollPosition = window.scrollY + offset;
+    const scrollPosition = window.scrollY + offset + courseMenuHeight();
 
     let found = false;
 
@@ -954,7 +1021,7 @@ function initializePage(restoring = detectReload(), scrollTarget) {
     const targetElement = p ? document.getElementById(p) : null;
     if (targetElement) {
         const elementPosition = targetElement.getBoundingClientRect().top;
-        const offsetPosition = elementPosition - 112;
+        const offsetPosition = elementPosition - 112 - courseMenuHeight();
 
         window.scrollTo({
             top: offsetPosition,
@@ -1010,6 +1077,10 @@ function initializePage(restoring = detectReload(), scrollTarget) {
         }
     }
 
+    const courseMenu = mobileCourseContents();
+    if (courseMenu)
+        highlightCourseSection(courseMenu, true);
+
     revealPage();
 }
 
@@ -1038,4 +1109,13 @@ window.addEventListener('scroll', function () {
         !window.location.href.includes('experience') && 
         !window.location.href.match(/teaching\/?$/))
         highlightActiveSection();
+});
+
+
+window.addEventListener('resize', function () {
+    if (pageNavigationPending || sectionClick)
+        return;
+    const courseMenu = mobileCourseContents();
+    if (courseMenu)
+        highlightCourseSection(courseMenu, true);
 });

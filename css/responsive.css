@@ -543,6 +543,101 @@
     }
 }
 
+@media screen and (max-width: 1200px) {
+    .course-page {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: 'heading' 'contents' 'sections';
+    }
+
+    .course-page > .sidebar,
+    .course-page .toc-top {
+        display: none;
+    }
+
+    .course-page :is(.course-column, .main, .main-container) {
+        display: contents;
+    }
+
+    .course-page :is(.course-heading, .course-sections, .body-footer, .back),
+    .course-page #table-of-contents {
+        margin-inline: calc(var(--bs-gutter-x) * 0.5);
+    }
+
+    .course-heading {
+        grid-area: heading;
+    }
+
+    .course-heading hr {
+        margin-bottom: 0;
+    }
+
+    .course-page > .toc {
+        grid-area: contents;
+        position: sticky;
+        top: 60px;
+        z-index: 1020;
+        align-self: start;
+        width: 100%;
+        height: auto;
+        margin: 0;
+        padding: 0;
+        overflow: visible;
+        background-color: inherit;
+        transition: top 0.5s ease-in-out, padding-top 0.5s ease-in-out;
+    }
+
+    .course-page > .toc.toc-stuck {
+        padding-top: 6px;
+    }
+
+    body:has(.navbar.not-compressed) .course-page > .toc {
+        top: 80px;
+    }
+
+    html .course-page #table-of-contents {
+        border-left: 0;
+        border-bottom: 1px solid rgba(127, 127, 127, 0.35);
+    }
+
+    .course-page #table-of-contents ul {
+        display: flex;
+        justify-content: space-between;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .course-page #table-of-contents li {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+
+    .course-page #table-of-contents li a {
+        padding: 0.75rem 0.7rem;
+        font-size: 0.9rem;
+    }
+
+    .course-page #table-of-contents a:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: -3px;
+    }
+
+    .course-sections {
+        grid-area: sections;
+    }
+
+    .course-sections > #info {
+        padding-top: 1rem;
+    }
+
+    .course-sections > div + div {
+        margin-top: 1.25rem;
+    }
+}
+
 @media screen and (max-width: 675px) {
     .toc {
         padding-left: 0;
@@ -602,6 +697,28 @@
         margin: 0 auto;
         margin-top: 1rem;
         margin-bottom: 0.25rem;
+    }
+}
+
+@media screen and (max-width: 409px) {
+    .portrait-title h2 {
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media screen and (max-width: 366px) {
+    .portrait-title h2 {
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media screen and (max-width: 288px) {
+    .portrait-title h2 {
+        width: 100%;
     }
 }
 

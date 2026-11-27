@@ -609,7 +609,10 @@ async function navigateWithFade(url, {entryKey, animate = true, scrollTarget} = 
         if (!saved && destination.hash) {
             const target = document.getElementById(decodeURIComponent(destination.hash.slice(1)));
             if (target)
-                window.scrollTo({top: target.getBoundingClientRect().top + window.scrollY - 112, behavior: 'instant'});
+                window.scrollTo({
+                    top: target.getBoundingClientRect().top + window.scrollY - 112 - courseMenuHeight(),
+                    behavior: 'instant'
+                });
         }
     } catch (error) {
         if (!visit.signal.aborted) {
@@ -745,6 +748,25 @@ function squeezeNavbar() {
         navbar.classList.toggle('compressed', isCompressed);
         navbar.classList.toggle('not-compressed', !isCompressed);
     });
+    updateCourseMenu();
+}
+
+
+function updateCourseMenu() {
+    if (!window.matchMedia('(max-width: 1200px)').matches)
+        return;
+    const menu = document.querySelector('.course-page > .toc');
+    if (!menu)
+        return;
+    const stickyTop = parseFloat(getComputedStyle(menu).top);
+    menu.classList.toggle('toc-stuck', menu.getBoundingClientRect().top <= stickyTop + 0.5);
+}
+
+
+function courseMenuHeight() {
+    if (!window.matchMedia('(max-width: 1200px)').matches)
+        return 0;
+    return document.querySelector('.course-page > .toc')?.offsetHeight ?? 0;
 }
 
 
@@ -957,7 +979,7 @@ function createSearchHitElement({key, title, info, type, link}) {
             sessionStorage.removeItem('scrollTo');
             const targetElement = document.getElementById(targetID);
             const offsetPosition = targetElement
-                ? targetElement.getBoundingClientRect().top + window.scrollY - 116
+                ? targetElement.getBoundingClientRect().top + window.scrollY - 116 - courseMenuHeight()
                 : 0;
             window.scrollTo({
                 top: offsetPosition,
@@ -1216,6 +1238,12 @@ function restorePageState(restoring) {
 
 const reloadTransitionReady = initializeReloadTransition();
 initializePageVisibility();
+
+window.addEventListener('resize', updateCourseMenu);
+document.addEventListener('transitionend', event => {
+    if (event.propertyName === 'top' && event.target.matches('.course-page > .toc'))
+        updateCourseMenu();
+});
 
 if (standaloneCV) {
     document.addEventListener('DOMContentLoaded', async () => {
