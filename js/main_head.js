@@ -790,6 +790,7 @@ function progressBar() {
 
 function showMap() {
     const map = L.map('map', {keepBuffer: 10}).setView([43.721020, 10.389863], 15);
+    map.panBy([0, -20], {animate: false});
     pageMap = map;
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -799,7 +800,7 @@ function showMap() {
     }).addTo(map);
 
     const marker = L.marker([43.721020, 10.389863]).addTo(map);
-    marker.bindPopup('<b>Dipartimento di Ingegneria dell&#39;Informazione</b><br>Largo Lucio Lazzarino 1, 56122, Pisa');
+    marker.bindPopup('<b>Dipartimento di Ingegneria dell&#39;Informazione</b><br>Largo Lucio Lazzarino 1, 56122, Pisa').openPopup();
 }
 
 
